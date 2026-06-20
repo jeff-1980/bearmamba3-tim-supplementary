@@ -1,0 +1,23 @@
+{
+  "config": "config_dual_nokin.yaml",
+  "backbone": "mamba3",
+  "lambda_kin": 0.0,
+  "noise_snr_db": 0.0,
+  "label_mode": "4class",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "best_val_accs": [
+    1.0,
+    0.9991503823279524,
+    0.9983007646559049,
+    0.9991503823279524,
+    0.9974511469838573
+  ],
+  "mean_best_val_acc": 0.9988105352591333,
+  "std_best_val_acc": 0.000968713190398569
+}

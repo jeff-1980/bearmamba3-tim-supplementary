@@ -1,0 +1,23 @@
+{
+  "config": "tmpvb4r_0ot.yaml",
+  "backbone": "mamba3",
+  "lambda_kin": 0.0,
+  "noise_snr_db": -8.0,
+  "label_mode": "4class",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "best_val_accs": [
+    0.9082412914188616,
+    0.8912489379779099,
+    0.8827527612574342,
+    0.8521665250637214,
+    0.864910790144435
+  ],
+  "mean_best_val_acc": 0.8798640611724723,
+  "std_best_val_acc": 0.02198852556133507
+}

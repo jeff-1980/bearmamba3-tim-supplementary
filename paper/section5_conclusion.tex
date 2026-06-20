@@ -1,0 +1,79 @@
+% ============================================================
+% Section 5: Conclusion
+% BearMamba-3: Mamba-3 + L_kin + Multi-Sensor Fusion
+% Target: IEEE TIM (IF 5.6)  Draft: 2026-06-15 → 2026-06-18 (D34)
+% ============================================================
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+We presented BearMamba-3, a bearing fault diagnosis framework that integrates
+the Mamba-3 state-space backbone with a kinematic frequency inductive bias
+$\mathcal{L}_{\text{kin}}$ and multi-sensor convolutional fusion.
+
+The core structural insight is that Mamba-3's complex oscillatory states carry
+instantaneous rotation frequencies $f_{h,k}(t)$ — a physical quantity absent
+in real-valued SSMs — which enable activation-level alignment with analytically
+known bearing fault harmonics.
+This binding between the backbone selection (C1) and the physical regulariser
+design (C2) constitutes a principled, integrated contribution rather than two
+independently interchangeable components.
+
+Our experimental results on three public datasets reveal a coherent picture
+of where activation-level kinematic priors help and where they do not:
+$\mathcal{L}_{\text{kin}}$ consistently reduces prediction variance under
+synthetic AWGN (CWRU, std $\downarrow$14--62\%) and aligns internal state
+frequencies with fault harmonics in both constant-speed (CWRU) and
+run-to-failure (XJTU-SY) regimes.
+However, it provides no statistically significant mean accuracy improvement,
+and is ineffective in discrete-speed-switching regimes (Paderborn) where the
+per-sample RPM degeneracy eliminates its continuous-speed adaptation advantage.
+These boundary conditions are reported as honest negative results alongside
+the positive findings.
+
+The multi-sensor experiments (C3) reveal a precision--sample-efficiency
+trade-off: dual-sensor fusion improves accuracy when training data is
+sufficient to learn cross-channel correspondences (CWRU $-4$~dB, $p=0.031$;
+XJTU cross-condition IR recall $+31.6$~pp), but induces negative transfer in
+leave-one-bearing-out scenarios with a single training instance per fault type.
+This finding has practical implications for industrial deployment: multi-sensor
+systems require adequate per-fault-type coverage, a constraint that may be
+difficult to satisfy in early commissioning or rare-fault scenarios.
+
+\paragraph{Inductive bias paradigms.}
+A cross-dataset analysis (Section~\ref{subsec:paradigm}) further reveals a
+systematic complementarity between two families of diagnostic methods.
+\emph{BN-dependent} methods (1D-CNN family) use BatchNorm to normalise
+activations using source-domain statistics, conferring powerful within-condition
+regularisation but collapsing under domain shift (XJTU-SY OOD, $41.3\%$
+macro-F1, IR recall $< 2\%$).
+The \emph{frequency-grounded} paradigm introduced here substitutes statistical
+normalisation with an explicit, distribution-agnostic physical constraint,
+yielding comparable within-condition accuracy (the $10.2$~pp gap at $-8$~dB
+closes to $p=0.125$ once BatchNorm is removed from 1D-CNN) and maintaining
+macro-F1 of $79.7\%$ on the XJTU-SY cross-condition benchmark ($+38.4$~pp
+over 1D-CNN).
+This paradigm distinction is the paper's principal generalisable insight:
+the deployment context --- within-condition vs.\ cross-condition monitoring ---
+should govern the choice of inductive bias, not accuracy on a single benchmark.
+
+\paragraph{Limitations and future work.}
+The MIMO backward limitation on Ampere-class GPUs (sm\_86) prevented the full
+validation of the hypothesised MIMO--sensor-count interaction; future work on
+Hopper-class hardware could provide a complete ablation.
+Non-Gaussian industrial noise remains an open direction, as detailed
+in the Discussion (Section~\ref{sec:discussion}).
+Self-supervised pretraining~\cite{ding2022ssl,wan2022siamese} could further
+reduce label requirements in run-to-failure monitoring scenarios such as
+XJTU-SY, complementing the supervised protocol used here.
+Larger-scale replication studies (seeds $> 5$) would strengthen the
+variance-stability and multi-sensor findings, where current statistical
+power is $\approx 50\%$ for 2~pp effects at $n=5$.
+
+Beyond these specific extensions, BearMamba-3 provides a
+measurement-stage building block for intelligent diagnostic
+instrumentation: it pairs an interpretable, physically grounded
+state-space representation with an honest assessment of the regimes
+in which physical inductive bias does and does not confer accuracy
+gains, supporting evidence-based selection of diagnostic algorithms
+in industrial condition-monitoring systems.

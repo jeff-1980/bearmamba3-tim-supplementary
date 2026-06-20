@@ -1,0 +1,23 @@
+{
+  "config": "tmphdf99xtd.yaml",
+  "backbone": "mamba3",
+  "lambda_kin": 0.0,
+  "noise_snr_db": -4.0,
+  "label_mode": "4class",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "best_val_accs": [
+    0.9872557349192863,
+    0.9813084112149533,
+    0.9830076465590484,
+    0.9728122344944775,
+    0.9787595581988106
+  ],
+  "mean_best_val_acc": 0.9806287170773151,
+  "std_best_val_acc": 0.005353265591171896
+}

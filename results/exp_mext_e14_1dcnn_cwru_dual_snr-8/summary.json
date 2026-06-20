@@ -1,0 +1,23 @@
+{
+  "config": "config_snr-8.yaml",
+  "backbone": "cnn1d",
+  "lambda_kin": 0.0,
+  "noise_snr_db": -8.0,
+  "label_mode": "4class",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "best_val_accs": [
+    0.9855564995751912,
+    0.9906542056074766,
+    0.989804587935429,
+    0.989804587935429,
+    0.989804587935429
+  ],
+  "mean_best_val_acc": 0.989124893797791,
+  "std_best_val_acc": 0.0020284343901976506
+}

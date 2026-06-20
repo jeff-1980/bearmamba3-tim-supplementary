@@ -1,0 +1,23 @@
+name: exp03_10class_snr0_kin
+data_dir: ~/论文8/data/cwru_12k_de
+channels: [DE]
+win_len: 2048
+stride: 1024
+val_ratio: 0.2
+batch_size: 64
+num_workers: 4
+label_mode: 10class
+d_model: 64
+d_state: 128
+n_layers: 4
+conv_stride: 2
+epochs: 50
+lr: 3.0e-4
+weight_decay: 1.0e-4
+grad_clip: 1.0
+scheduler: cosine
+noise_snr_db: 0.0
+lambda_kin: 0.01
+kin_variant: cover
+seeds: [0, 1, 2, 3, 4]
+results_dir: ~/论文8/results/exp03_10class_snr0_kin

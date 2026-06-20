@@ -1,0 +1,23 @@
+{
+  "config": "config_snr-6.yaml",
+  "backbone": "mamba3",
+  "lambda_kin": 0.0,
+  "noise_snr_db": -6.0,
+  "label_mode": "4class",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "best_val_accs": [
+    0.9056924384027187,
+    0.8674596431605778,
+    0.9328802039082413,
+    0.8963466440101954,
+    0.8980458793542906
+  ],
+  "mean_best_val_acc": 0.9000849617672048,
+  "std_best_val_acc": 0.02339613211745696
+}

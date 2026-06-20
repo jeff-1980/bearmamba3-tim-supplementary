@@ -1,0 +1,23 @@
+{
+  "config": "config_snr-5_nokin.yaml",
+  "backbone": "mamba3",
+  "lambda_kin": 0.0,
+  "noise_snr_db": -5.0,
+  "label_mode": "4class",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "best_val_accs": [
+    0.9694137638062872,
+    0.9430756159728122,
+    0.9753610875106202,
+    0.9575191163976211,
+    0.9558198810535259
+  ],
+  "mean_best_val_acc": 0.9602378929481734,
+  "std_best_val_acc": 0.012593271475181661
+}

@@ -1,0 +1,23 @@
+{
+  "config": "config_lk1em3.yaml",
+  "backbone": "mamba3",
+  "lambda_kin": 0.001,
+  "noise_snr_db": 0.0,
+  "label_mode": "4class",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "best_val_accs": [
+    0.9983007646559049,
+    0.9983007646559049,
+    0.9991503823279524,
+    0.9966015293118097,
+    1.0
+  ],
+  "mean_best_val_acc": 0.9984706881903144,
+  "std_best_val_acc": 0.0012601866588097949
+}

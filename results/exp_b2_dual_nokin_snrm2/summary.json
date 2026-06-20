@@ -1,0 +1,23 @@
+{
+  "config": "tmpnh25iojf.yaml",
+  "backbone": "mamba3",
+  "lambda_kin": 0.0,
+  "noise_snr_db": -2.0,
+  "label_mode": "4class",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "best_val_accs": [
+    0.9957519116397621,
+    0.9966015293118097,
+    0.9932030586236194,
+    0.9889549702633815,
+    0.994052676295667
+  ],
+  "mean_best_val_acc": 0.9937128292268479,
+  "std_best_val_acc": 0.0029797243698810563
+}

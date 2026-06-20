@@ -1,0 +1,98 @@
+% ============================================================
+% Section 3: Physical Background
+% BearMamba-3: Mamba-3 + L_kin + Multi-Sensor Fusion
+% Target: MSSP (IF 8.4)  Draft: 2026-06-15
+% ============================================================
+
+\section{Physical Background}
+\label{sec:physics}
+
+\subsection{Bearing Fault Characteristic Frequencies}
+\label{subsec:phys_freqs}
+
+Rolling element bearings generate periodic vibration signatures whose
+frequencies are analytically determined by bearing geometry and shaft speed.
+For a bearing with $n_b$ rolling elements, ball diameter $d$, pitch
+diameter $D$, and contact angle $\alpha$, the four primary fault
+characteristic frequencies are~\cite{randall2011rolling,smith2015rolling}:
+\begin{align}
+  f_{\text{BPFO}} &= \frac{n_b}{2}\,f_r\!\left(1 - \frac{d}{D}\cos\alpha\right),
+  \label{eq:bpfo} \\
+  f_{\text{BPFI}} &= \frac{n_b}{2}\,f_r\!\left(1 + \frac{d}{D}\cos\alpha\right),
+  \label{eq:bpfi} \\
+  f_{\text{BSF}}  &= \frac{D}{2d}\,f_r\!\left[1 - \left(\frac{d}{D}\cos\alpha\right)^2\right],
+  \label{eq:bsf}  \\
+  f_{\text{FTF}}  &= \frac{f_r}{2}\!\left(1 - \frac{d}{D}\cos\alpha\right),
+  \label{eq:ftf}
+\end{align}
+where $f_r = \Omega/60$ is the shaft rotation frequency (Hz) and $\Omega$
+is shaft speed (rpm).
+$f_{\text{BPFO}}$ (Ball Pass Frequency, Outer Race) is excited by outer-race
+defects; $f_{\text{BPFI}}$ by inner-race defects; $f_{\text{BSF}}$ (Ball
+Spin Frequency) by rolling element defects; and $f_{\text{FTF}}$ (Fundamental
+Train Frequency) by cage defects.
+Each characteristic frequency and its integer harmonics produce periodic
+impulse trains in the measured vibration signal, which form the primary
+diagnostic signatures for bearing condition monitoring and fault
+detection~\cite{lei2020applications,antoni2006spectral_kurtosis}.
+
+Table~\ref{tab:bearing_params} lists the bearing parameters used in this
+study and the resulting characteristic frequencies at nominal shaft speeds.
+
+\begin{table}[htbp]
+\centering
+\caption{Bearing parameters and fault characteristic frequencies at
+         nominal shaft speed for each dataset.}
+\label{tab:bearing_params}
+\begin{tabular}{lcccccc}
+\toprule
+Dataset & Bearing & $n_b$ & $d$ (mm) & $D$ (mm) & $\Omega$ (rpm)
+        & $f_{\text{BPFO}}$ / $f_{\text{BPFI}}$ (Hz) \\
+\midrule
+CWRU DE & SKF 6205 & 9 & 7.94  & 39.04 & 1797
+         & 107.36 / 162.19 \\
+CWRU FE & SKF 6203 & 8 & 6.75  & 28.50 & 1797
+         & 91.44$^\dagger$ / 148.16$^\dagger$ \\
+PU      & SKF 6203 & 8 & 6.75  & 29.05 & 1500
+         & 76.77 / 123.23 \\
+XJTU-SY & LDK UER204 & 8 & 7.92 & 34.55 & 2400
+          & 123.32 / 196.68 \\
+\bottomrule
+\end{tabular}
+\begin{tablenotes}
+\item[$\dagger$] CWRU FE bearing (SKF 6203) has a different pitch diameter
+  (28.50~mm) from the PU bearing of the same part number (29.05~mm);
+  these are computed separately.
+  All contact angles $\alpha = 0^\circ$.
+\end{tablenotes}
+\end{table}
+
+\subsection{Speed-Dependent Shift and Per-Sample Frequency Targets}
+\label{subsec:phys_speed}
+
+Because all characteristic frequencies scale proportionally with shaft
+speed $f_r$, any variation in operating speed directly shifts the
+entire fault frequency spectrum.
+Under variable-speed conditions — such as the accelerated-life XJTU-SY
+recordings where instantaneous speed fluctuates within a measurement window
+— using a fixed dataset-level frequency set would introduce misalignment
+errors proportional to the speed deviation~\cite{liu2023var_speed,liao2020variable_domain}.
+
+This constraint motivates computing the fault frequency target set
+$\mathcal{F}_i$ \emph{per sample} from each sample's known shaft speed
+$\Omega_i$, which is available as metadata in all three datasets used here
+(CWRU nominal 1797~rpm; PU nominal 900 or 1500~rpm; XJTU-SY nominal 2100,
+2250, or 2400~rpm per condition).
+This per-sample design makes $\mathcal{L}_{\text{kin}}$ naturally applicable
+to variable-speed scenarios without modification to the loss function —
+a key distinction from fixed-spectrum regularisers.
+
+Spectral Kurtosis~\cite{antoni2006spectral_kurtosis} represents the
+classical signal-processing approach for identifying impulsive
+fault-frequency content; envelope demodulation then localises BPFO/BPFI
+peaks.
+BearMamba-3 extends this principle to the learned-representation domain
+by encouraging the Mamba-3 backbone's internal oscillatory states to
+resonate at the analytically known fault harmonics during training
+(Section~\ref{subsec:lkin}), while preserving end-to-end trainability
+from raw waveforms.

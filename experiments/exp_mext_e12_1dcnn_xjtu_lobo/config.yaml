@@ -1,0 +1,33 @@
+name: exp_mext_e12_1dcnn_xjtu_lobo
+mode: lobo
+backbone: cnn1d
+
+# ── data ──────────────────────────────────────────────────────────
+data_root: ~/data_xjtu/XJTU-SY_Bearing_Datasets
+window_size: 2048
+
+# ── model ─────────────────────────────────────────────────────────
+d_model: 64
+n_layers: 4
+n_sensors: 1
+n_classes: 2
+conv_stride: 2
+
+# ── training ──────────────────────────────────────────────────────
+batch_size: 64
+num_workers: 4
+epochs: 50
+lr: 3.0e-4
+weight_decay: 1.0e-4
+grad_clip: 1.0
+scheduler: cosine
+
+# ── loss ──────────────────────────────────────────────────────────
+lambda_kin: 0.0
+
+# ── ⚠️ fs_eff assert (D26, required even for non-L_kin runs) ──────
+fs_eff: 12800.0
+
+# ── experiment ────────────────────────────────────────────────────
+seeds: [0, 1, 2, 3, 4]
+results_dir: ~/论文8/results/exp_mext_e12_1dcnn_xjtu_lobo

@@ -1,0 +1,166 @@
+{
+  "phase1_rows": [
+    {
+      "dataset": "PU_cross",
+      "metric": "accuracy(%)",
+      "1D_CNN_mean": 96.80745770514444,
+      "1D_CNN_std": 0.20142051459459712,
+      "BM3_kin_mean": 95.70491425940845,
+      "BM3_kin_std": 0.709888943298484,
+      "BM3_nokin_mean": 95.81539878006676,
+      "BM2_mean": 95.60363678213835,
+      "delta_cnn_vs_bm3kin": 1.1025434457359893,
+      "wilcoxon_p": 0.125,
+      "cnn_per_seed": [
+        97.0307285073081,
+        96.8580964437795,
+        96.89262285648522,
+        96.76602600989757,
+        96.48981470825181
+      ],
+      "bm3kin_per_seed": [
+        95.29289906778685,
+        94.86707331108299,
+        95.78777764990217,
+        95.81079525837265,
+        96.76602600989757
+      ]
+    },
+    {
+      "dataset": "XJTU_LOBO",
+      "metric": "macro_recall(%)",
+      "1D_CNN_mean": 98.09475806451613,
+      "1D_CNN_std": 2.7377917937268985,
+      "BM3_kin_mean": 87.69504741974372,
+      "BM3_kin_std": 3.144185462356484,
+      "BM3_nokin_mean": 90.91470968066008,
+      "delta_cnn_vs_bm3kin": 10.399710644772412,
+      "wilcoxon_p": 0.0625,
+      "cnn_per_seed": [
+        99.09274193548387,
+        99.39516129032258,
+        99.14314516129032,
+        99.63037634408603,
+        93.21236559139786
+      ],
+      "bm3kin_per_seed": [
+        89.14268741047529,
+        84.31535567643418,
+        92.3008540901048,
+        85.57150189257682,
+        87.14483802912754
+      ]
+    },
+    {
+      "dataset": "XJTU_cross",
+      "metric": "macro_F1(%)",
+      "1D_CNN_mean": 41.306285600266456,
+      "1D_CNN_std": 0.6323901959329431,
+      "BM3_kin_mean": 79.73298477056747,
+      "BM3_kin_std": 8.263179197254455,
+      "BM3_nokin_mean": 80.88651489282447,
+      "delta_cnn_vs_bm3kin": -38.42669917030101,
+      "wilcoxon_p": 0.0625,
+      "cnn_per_seed": [
+        40.89706904394937,
+        41.685020846849675,
+        41.92535744221089,
+        40.40688641338081,
+        41.61709425494153
+      ],
+      "bm3kin_per_seed": [
+        72.4003723445663,
+        89.07587529069946,
+        71.25134979442576,
+        87.39508115992298,
+        78.54224526322287
+      ]
+    }
+  ],
+  "e14_cwru_dual": [
+    {
+      "snr": -8,
+      "cnn_dual_mean": 98.91248937977909,
+      "cnn_dual_std": 0.20284343901976645,
+      "bm3_dual_mean": 87.98640611724724,
+      "cnn_single_mean": 95.95581988105351,
+      "wilcoxon_p_vs_bm3dual": 0.0625,
+      "wilcoxon_p_vs_bm3": 0.0625
+    },
+    {
+      "snr": -6,
+      "cnn_dual_mean": 99.98300764655906,
+      "cnn_dual_std": 0.03799605739167113,
+      "bm3_dual_mean": 94.23959218351742,
+      "cnn_single_mean": 98.84451996601528,
+      "wilcoxon_p_vs_bm3dual": 0.0625,
+      "wilcoxon_p_vs_bm3": 0.0625
+    },
+    {
+      "snr": -4,
+      "cnn_dual_mean": 100.0,
+      "cnn_dual_std": 0.0,
+      "bm3_dual_mean": 98.06287170773153,
+      "cnn_single_mean": 99.96601529311809,
+      "wilcoxon_p_vs_bm3dual": 0.0625,
+      "wilcoxon_p_vs_bm3": 0.0625
+    },
+    {
+      "snr": -2,
+      "cnn_dual_mean": 100.0,
+      "cnn_dual_std": 0.0,
+      "bm3_dual_mean": 99.3712829226848,
+      "cnn_single_mean": 100.0,
+      "wilcoxon_p_vs_bm3dual": 0.0625,
+      "wilcoxon_p_vs_bm3": 0.0625
+    },
+    {
+      "snr": 0,
+      "cnn_dual_mean": 100.0,
+      "cnn_dual_std": 0.0,
+      "bm3_dual_mean": 99.88105352591334,
+      "cnn_single_mean": 100.0,
+      "wilcoxon_p_vs_bm3dual": 0.125,
+      "wilcoxon_p_vs_bm3": 0.125
+    }
+  ],
+  "lobo_fold3_supplement": {
+    "note": "fold3 Bearing3_5(OR): only fold with discriminative power; fold0/1/2 are single-class (trivial recall=1.0)",
+    "cnn1d_fold3_or_recall": [
+      0.9637096774193549,
+      0.9758064516129032,
+      0.9657258064516129,
+      0.9852150537634409,
+      0.728494623655914
+    ],
+    "bm3_fold3_or_recall": [
+      0.6485215053763441,
+      0.5611559139784946,
+      0.7163978494623656,
+      0.9065860215053764,
+      0.5020161290322581
+    ],
+    "cnn1d_mean": 0.9237903225806452,
+    "bm3_mean": 0.6669354838709678,
+    "delta": 0.2568548387096774,
+    "wilcoxon_p": 0.0625
+  },
+  "xjtu_cross_per_class": {
+    "or_recall_per_seed": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "ir_recall_per_seed": [
+      0.008,
+      0.015,
+      0.018,
+      0.003,
+      0.015
+    ],
+    "note": "1D-CNN collapses to OR-only predictor in OOD (Cond2->Cond3); OR:IR=7.4:1 training imbalance not overcome"
+  },
+  "lobo_fold0_1_2_note": "fold0(Bearing3_1=OR,2016w)/fold1(Bearing3_3=IR)/fold2(Bearing3_4=IR): single-class test sets, recall is trivially 1.0, no discriminative information"
+}

@@ -1,0 +1,177 @@
+% ============================================================
+% Section 1: Introduction
+% BearMamba-3: Mamba-3 + L_kin + Multi-Sensor Fusion
+% Target: IEEE TIM (IF 5.6)  Draft: 2026-06-15 → 2026-06-18 (D34)
+% ============================================================
+
+\section{Introduction}
+\label{sec:intro}
+
+Rolling element bearings are among the most failure-prone components in
+rotating machinery; their unexpected breakdown accounts for a disproportionate
+share of unplanned industrial downtime~\cite{bearing_importance}.
+Reliable on-line vibration measurement and condition monitoring are
+therefore central to predictive maintenance instrumentation, and
+data-driven fault diagnosis---the automatic identification of fault
+location (inner race, outer race, rolling element, cage) from vibration
+signals---has attracted sustained research attention over the past
+decade~\cite{lei2020applications}.
+
+\paragraph{From CNNs to sequence models.}
+Early deep-learning methods relied on 1-D and 2-D convolutional neural
+networks that treat a sliding vibration window as a fixed-length pattern
+classification problem~\cite{wen2018new,zhang2020deep}.
+Transformers subsequently demonstrated that long-range temporal modelling
+can capture fault-periodic harmonics more faithfully than local
+convolutions~\cite{shao2021transformer_bearing},
+but their quadratic self-attention cost scales poorly with window length.
+State-space models (SSMs) offer a compelling middle ground:
+linear-time sequence processing with a principled recurrent mechanism
+that can, in principle, encode periodicity through its transition
+eigenstructure~\cite{gu2021efficiently}.
+Our prior work introduced BearMamba-2, an SSM bearing diagnostic model
+using the Mamba-2 backbone that achieves competitive accuracy under AWGN
+and cross-condition transfer, and showed that a complex-state extension
+(KG-cSSM) further benefits variable-speed diagnosis through
+architecture-level physics priors.
+
+\paragraph{Gap: activation-level physical alignment for Mamba-3.}
+Recent work has embedded physical priors into bearing diagnostics at
+different levels of the model: Jiang et al.~\cite{jiang2025mechanism} guide
+feature alignment via mechanism-driven domain adaptation at the
+distribution level; PINNs~\cite{raissi2019physics,willard2022physics}
+impose governing equations on network outputs.
+However, none of these approaches can leverage the Mamba-3 architecture's
+unique capability: \emph{per-step oscillatory states} that carry instantaneous
+physical frequencies as first-class activation values.
+The Mamba-3 architecture~\cite{mamba3_2026} parameterises each state
+dimension by an instantaneous angle activation $\theta_{h,k}(t)$
+projected from the current input, yielding a sequence of instantaneous
+physical frequencies $f_{h,k}(t)$ (measured in Hz) interpretable as the
+momentary resonance frequency of each state at each time step.
+We observe that $f_{h,k}(t)$ provides a direct \emph{activation-level hook}
+for injecting bearing kinematics: by encouraging the model's internal
+oscillation frequencies to align with the analytically known fault harmonics
+($f_{\text{BPFO}}$, $f_{\text{BPFI}}$, BSF, and their harmonics —
+derived in Section~\ref{sec:physics}), we endow the model with a
+physically meaningful inductive bias without modifying its architecture
+or adding parameters at inference time.
+
+\paragraph{Gap: multi-sensor Mamba-3.}
+Practical deployment often provides more than one vibration channel:
+drive-end and fan-end accelerometers in lab rigs, or orthogonal
+horizontal and vertical axes in industrial field sensors.
+Multi-sensor fusion at the convolutional embedding stage is architecturally
+trivial but its \emph{interaction} with the SSM state bandwidth
+($\texttt{mimo\_rank}$ in Mamba-3) has not been characterised.
+Understanding when additional sensor channels improve diagnosis — and when
+they induce negative transfer in low-data regimes — is practically important.
+
+\paragraph{Contributions.}
+This paper proposes \textbf{BearMamba-3}, a bearing fault diagnosis framework
+with the following four contributions:
+
+\begin{enumerate}[leftmargin=*, label=\textbf{C\arabic*}]
+  \item \textbf{First Mamba-3 bearing diagnostic model with structural
+        binding to physical frequency alignment.}
+        We demonstrate that the ICLR~2026 official Mamba-3
+        implementation~\cite{mamba3_2026} can be effectively applied to
+        bearing diagnosis, and—crucially—that its oscillatory state mechanism
+        is the \emph{unique carrier} of our kinematic loss $\mathcal{L}_{\text{kin}}$:
+        real-valued SSMs (Mamba-2) lack instantaneous rotation frequencies,
+        rendering $\mathcal{L}_{\text{kin}}$ architecturally undefined for them.
+        The adoption of Mamba-3 and the design of $\mathcal{L}_{\text{kin}}$ are
+        therefore a single integrated decision (Section~\ref{subsec:lkin}).
+
+  \item \textbf{$\mathcal{L}_{\text{kin}}$: activation-level kinematic inductive bias.}
+        We formulate a lightweight auxiliary loss that penalises the distance
+        between each model state's instantaneous frequency and the nearest
+        bearing fault harmonic, computed per sample from the actual shaft
+        speed.
+        $\mathcal{L}_{\text{kin}}$ requires no additional parameters, is
+        computed only during training, and naturally accommodates variable-speed
+        signals via per-sample RPM targets.
+        Empirically, $\mathcal{L}_{\text{kin}}$:
+        \textit{(i)} improves physical interpretability by aligning state
+        frequencies with fault harmonics, quantified through I1 snapshots
+        (Section~\ref{subsubsec:i1});
+        \textit{(ii)} reduces inter-seed accuracy variance under AWGN
+        (std $\downarrow$14--62\% across the EAAI evaluation SNR grid
+        for CWRU; Section~\ref{subsubsec:snr_ablation}), a descriptive
+        observation without statistical significance claim at $\alpha=0.05$;
+        \textit{(iii)} reveals the boundary conditions of activation-level
+        physics priors: ineffective in discrete-speed regimes (Paderborn) and
+        amplitude-dominated run-to-failure signals (XJTU-SY).
+        % ⚠️ std 范围 14-62%（不得写"30-63%"），D15
+
+  \item \textbf{Multi-sensor fusion with precision--sample-efficiency
+        trade-off characterisation.}
+        We extend BearMamba-3 to multi-sensor input via a shared convolutional
+        embedding ($n_s$ input channels) and ablate the MIMO--sensor-count
+        interaction through systematic experiments on CWRU (drive-end + fan-end)
+        and XJTU-SY (horizontal + vertical).
+        \textbf{The sole statistically significant finding} is a dual-sensor
+        accuracy gain of $+0.70$~pp at SNR~$= -4$~dB on CWRU
+        (Wilcoxon $p = 0.031$, $n = 5$, one-sided).
+        XJTU-SY experiments provide complementary mechanistic evidence of a
+        precision--sample-efficiency trade-off: dual-sensor cross-condition
+        inner-race recall improves by $+31.6$~pp (5/5 seeds concordant,
+        $p = 0.063$, above $\alpha=0.05$), while leave-one-bearing-out with
+        a single OR training instance induces negative transfer ($-15.5$~pp,
+        $p = 0.063$, 5/5 seeds negative).
+        The XJTU results are reported as mechanistic evidence, not as
+        statistically significant claims (Section~\ref{subsubsec:xjtu}).
+        % ⚠️ 不声称"XJTU统计显著"（D29）；统计主证据=CWRU -4dB p=0.031
+
+  \item \textbf{Cross-paradigm analysis: BN-dependent vs.\ frequency-grounded
+        inductive bias.}
+        A systematic BatchNorm ablation on 1D-CNN reveals that BatchNorm is the
+        principal source of 1D-CNN's within-condition low-SNR advantage
+        ($-12.7$~pp without BatchNorm at $-8$~dB, $p=0.063$; gap with BM3
+        becomes non-significant, $p=0.125$).
+        Concurrently, BearMamba-3~$+\mathcal{L}_{\text{kin}}$ achieves
+        $+38.4$~pp macro-F1 on XJTU-SY cross-condition OOD evaluation
+        (5/5 seeds, $p=0.063$) over 1D-CNN, which collapses to a
+        constant-OR predictor.
+        This exposes a systematic complementarity: the \emph{BN-dependent
+        paradigm} confers powerful within-distribution regularisation at the
+        cost of OOD brittleness; the \emph{frequency-grounded paradigm}
+        provides distribution-agnostic physical constraints at no within-condition
+        cost once BatchNorm is absent.
+        (Section~\ref{subsec:paradigm})
+        % ⚠️ D33: Win2 叙事框架最终版；禁用"BM3 significantly outperforms CNN-noBN"
+\end{enumerate}
+
+\paragraph{Relationship to prior work.}
+BearMamba-3 is positioned in a progression of increasingly deep physics
+integration: feature-level noise-awareness (BearMamba-2, submitted) $\to$
+architecture-level complex-state priors for variable-speed diagnosis
+(KG-cSSM, under review) $\to$
+\textbf{BearMamba-3} (activation-level kinematic inductive bias $\times$
+multi-sensor).
+BearMamba-3 is differentiated from the KG-cSSM line by using the official
+Mamba-3 backbone~\cite{mamba3_2026} (rather than a custom complex-state
+design), by per-sample variable-speed loss computation, and by the
+systematic multi-sensor ablation.
+
+\paragraph{Experimental scope.}
+All experiments use 5 independent random seeds with Wilcoxon signed-rank
+tests ($n=5$).
+On CWRU, we benchmark against a classical baseline
+(SK-SVM~\cite{antoni2006spectral_kurtosis}), two deep learning baselines
+(1D-CNN and Transformer-1D), and BearMamba-2 (Table~\ref{tab:cwru_baselines});
+focused ablation studies then isolate the Mamba-3 vs Mamba-2 and
+$\pm\mathcal{L}_{\text{kin}}$ effects across the EAAI SNR evaluation grid
+($-8$ to $+10$~dB).
+
+\paragraph{Paper organisation.}
+Section~\ref{sec:related} reviews related work.
+Section~\ref{sec:physics} provides the bearing kinematics background and
+defines the fault characteristic frequency equations used throughout.
+Section~\ref{sec:method} describes the BearMamba-3 architecture and
+$\mathcal{L}_{\text{kin}}$.
+Section~\ref{sec:experiments} presents experimental results on CWRU,
+Paderborn, and XJTU-SY.
+Section~\ref{sec:discussion} discusses findings, boundary conditions, and
+limitations.
+Section~\ref{sec:conclusion} concludes.

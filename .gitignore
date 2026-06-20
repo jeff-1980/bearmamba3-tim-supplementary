@@ -1,0 +1,61 @@
+# ============================================================
+# .gitignore — BearMamba-3 submission package
+# ============================================================
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# --- Virtual environments ---
+venv/
+env/
+.venv/
+
+# --- IDEs / OS ---
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# --- Data (must download separately) ---
+data/
+data_cwru/
+data_pu/
+data_xjtu/
+
+# --- Training artifacts NOT shipped ---
+*.pt
+*.pth
+*.ckpt
+checkpoints/
+wandb/
+runs/
+
+# --- Raw .npz snapshots (excluded from repo, available via IEEE DataPort) ---
+results/**/*.npz
+!results/tsne_feats/*.npz   # but keep the t-SNE feature caches
+
+# --- LaTeX intermediate files ---
+*.aux
+*.log
+*.out
+*.toc
+*.bbl
+*.blg
+*.spl
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+
+# --- Misc ---
+*.zip
+*.tar.gz
+.env
+*.local

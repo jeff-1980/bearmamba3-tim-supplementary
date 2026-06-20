@@ -1,0 +1,61 @@
+% ============================================================
+% Abstract
+% BearMamba-3: Mamba-3 + L_kin + Multi-Sensor Fusion
+% Target: IEEE TIM (IF 5.6)  Draft: 2026-06-15 → 2026-06-18 (D34)
+% ============================================================
+
+\begin{abstract}
+Reliable diagnostic instrumentation for rolling bearings demands accurate
+and interpretable inference from vibration measurements.
+State-space models (SSMs) have recently achieved competitive accuracy on
+vibration-based bearing fault diagnosis, yet embedding physical domain
+knowledge at the activation level remains largely unexplored.
+This paper presents \textbf{BearMamba-3}, a bearing diagnostic framework
+built on the official Mamba-3 backbone (ICLR~2026), augmented with a
+\textit{kinematic frequency inductive bias} loss $\mathcal{L}_{\text{kin}}$
+and a multi-sensor convolutional input pathway.
+
+$\mathcal{L}_{\text{kin}}$ exploits a property unique to Mamba-3's complex
+oscillatory states: each state dimension carries an instantaneous rotation
+frequency $f_{h,k}(t)$, interpretable as a physical resonance in Hz.
+The loss aligns these state frequencies with fault harmonics computed per
+sample from the shaft speed — a constraint undefined for real-valued
+Mamba-2, structurally binding the Mamba-3 backbone to the kinematic
+loss design.
+
+Experiments across CWRU, Paderborn University (PU), and XJTU-SY yield
+four findings:
+\textit{(1)} BearMamba-3 achieves accuracy non-inferior to BearMamba-2
+($p>0.05$, $n=5$, cross-condition PU), confirming Mamba-3 does not trade
+accuracy for interpretability;
+\textit{(2)} $\mathcal{L}_{\text{kin}}$ reduces inter-seed variance by
+14--62\% under AWGN on CWRU (descriptive; $p\geq0.25$), and frequency
+snapshots visualise progressive fault-harmonic alignment during training;
+\textit{(3)} dual-sensor fusion yields a statistically significant
+$+0.70$~pp gain at SNR~$=-4$~dB on CWRU (Wilcoxon $p=0.031$, $n=5$),
+while cross-condition inner-race recall improves $+31.6$~pp on XJTU-SY
+(5/5 seeds, $p=0.063$), characterising a precision--sample-efficiency
+trade-off;
+\textit{(4)} a cross-dataset BatchNorm ablation reveals that 1D-CNN's
+within-condition advantage over BM3 is principally attributable to
+BatchNorm regularisation (removing BatchNorm reduces 1D-CNN by $12.7$~pp
+at $-8$~dB, $p=0.063$; without BatchNorm, $p=0.125$ vs BM3), whereas
+BM3~$+\mathcal{L}_{\text{kin}}$ achieves $+38.4$~pp macro-F1 on
+XJTU-SY cross-condition evaluation (5/5 seeds, $p=0.063$), demonstrating
+that physical frequency alignment provides out-of-distribution robustness
+that statistical normalisation cannot replicate.
+Code and configurations are publicly available.
+
+\end{abstract}
+
+\begin{IEEEkeywords}
+Bearing fault diagnosis,
+state-space model,
+Mamba-3,
+physical inductive bias,
+kinematic loss,
+multi-sensor fusion,
+instantaneous frequency,
+vibration measurement,
+diagnostic instrumentation.
+\end{IEEEkeywords}

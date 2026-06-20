@@ -1,0 +1,27 @@
+{
+  "mode": "lobo",
+  "config": "exp_mext_e12_1dcnn_xjtu_lobo",
+  "lambda_kin": 0.0,
+  "lobo_bearings": [
+    "Bearing3_1",
+    "Bearing3_3",
+    "Bearing3_4",
+    "Bearing3_5"
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "per_seed_macro_recall": [
+    0.9909274193548387,
+    0.9939516129032258,
+    0.9914314516129032,
+    0.9963037634408602,
+    0.9321236559139785
+  ],
+  "mean_macro_recall": 0.9809475806451612,
+  "std_macro_recall": 0.027377917937269004
+}

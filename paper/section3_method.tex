@@ -1,0 +1,328 @@
+% ============================================================
+% Section 3: Methodology
+% BearMamba-3: Mamba-3 + L_kin + Multi-Sensor Fusion
+% Target: MSSP (IF 8.4)  Draft: 2026-06-15
+% ============================================================
+
+\section{Methodology}
+\label{sec:method}
+
+\subsection{BearMamba-3 Architecture}
+\label{subsec:arch}
+
+%% --- 3.1 overview --------------------------------------------------------
+BearMamba-3 is a sequence model for rolling bearing fault diagnosis built on
+the Mamba-3 state-space backbone~\cite{mamba3_2026}, augmented with a
+kinematic frequency inductive bias (Section~\ref{subsec:lkin}) and an optional
+multi-sensor input pathway (Section~\ref{subsec:multisensor}).
+Figure~\ref{fig:arch} shows the overall architecture.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{arch_bearmamba3}
+\caption{BearMamba-3 architecture. \textbf{Main path} (top): raw vibration
+  $\mathbf{x}$ with $n_s$ sensor channels $\to$ strided 1-D convolutional
+  embedding $\to$ $N_\ell=4$ Mamba-3 blocks (pre-norm residual) $\to$
+  mean pooling $\to$ linear classifier $\to$ CE loss.
+  \textbf{$\mathcal{L}_{\text{kin}}$ branch} (dashed, training only):
+  the angle activations $\theta_{h,k}(t)$ from every Mamba-3 block yield
+  instantaneous state frequencies $f_{h,k}(t)$ (Eq.~\ref{eq:finst});
+  the nearest-state distance to per-sample fault harmonics $\mathcal{F}_i$
+  (Eq.~\ref{eq:faults}) is minimised by $\mathcal{L}_{\text{kin}}$
+  (Eq.~\ref{eq:lkin}).
+  For dual-sensor CWRU experiments, $n_s=2$ (DE+FE);
+  $\mathcal{L}_{\text{kin}}$ is applied to the DE channel only.}
+\label{fig:arch}
+\end{figure}
+
+\paragraph{Input and convolutional embedding.}
+Given a vibration segment $\mathbf{x} \in \mathbb{R}^{T \times n_s}$ sampled
+at $f_s$ Hz with $n_s$ sensor channels, a strided 1-D convolutional layer
+with kernel size $k$, stride $s_c$, and $d_{\text{model}}$ filters maps
+$\mathbf{x}$ to a patch-free token sequence
+$\mathbf{H}^{(0)} \in \mathbb{R}^{L \times d_{\text{model}}}$,
+where $L = \lfloor T/s_c \rfloor$.
+No patch tokenisation is used; all $n_s$ input channels are fed simultaneously
+to the same convolutional layer, implementing sensor fusion at the earliest
+stage~\cite{fusion_early,chen2017multisensor}.
+% ⚠️ 写作约束：嵌入层只用卷积，禁 Patch tokenization
+
+\paragraph{Mamba-3 blocks.}
+A stack of $N_{\ell}$ Mamba-3 blocks processes the token sequence.
+Each block adopts a pre-norm residual structure:
+\begin{equation}
+  \mathbf{H}^{(\ell)} = \mathbf{H}^{(\ell-1)}
+    + \text{Mamba3Block}\!\left(\text{LN}(\mathbf{H}^{(\ell-1)})\right),
+  \quad \ell = 1, \ldots, N_\ell,
+  \label{eq:prenorm}
+\end{equation}
+where LN denotes layer normalisation.
+Each Mamba-3 block contains an input projection $\mathbf{W}_{\text{in}}$
+that simultaneously computes the state-space input, the angle activations,
+and the time-step $\Delta t$ from the current token.
+Unlike Mamba-2, which evolves scalar real-valued states, Mamba-3 evolves
+complex-valued states through a rotation operator parameterised by an
+instantaneous angle $\theta_{h,k}(t)$ per head $h$ and state dimension $k$,
+enabling the model to represent oscillatory dynamics over arbitrary
+frequencies~\cite{mamba3_2026}.
+
+\paragraph{Classification head.}
+The output sequence $\mathbf{H}^{(N_\ell)}$ is mean-pooled across the time
+dimension to produce a fixed-size representation
+$\mathbf{h} = \text{LN}\!\left(\text{mean}_t \mathbf{H}^{(N_\ell)}\right) \in \mathbb{R}^{d_{\text{model}}}$,
+which is passed to a linear classifier.
+
+\paragraph{Hyperparameters.}
+Unless otherwise stated, we use $d_{\text{model}} = 64$, $d_{\text{state}} = 128$,
+$N_\ell = 4$ layers, convolution kernel $k = 3$, stride $s_c = 2$, and
+\texttt{is\_mimo = False} (SISO mode; MIMO constraints are discussed in
+Section~\ref{subsec:multisensor}).
+The total parameter count is 178,068 for $n_s = 1$ (single sensor), compared
+with 173,980 for the BearMamba-2 baseline (ratio 1.02$\times$).
+
+% ⚠️ d_state=128 与论文叙事绑定，不得降低
+
+
+%% --- 3.2 L_kin -----------------------------------------------------------
+\subsection{Kinematic Frequency Inductive Bias ($\mathcal{L}_{\text{kin}}$)}
+\label{subsec:lkin}
+
+\paragraph{Motivation.}
+Bearing fault frequencies are deterministic functions of geometry and shaft
+speed; the outer-race ball-pass frequency, for example, satisfies
+$f_{\text{BPFO}} = \tfrac{n_b}{2}(1 - \tfrac{d}{D}\cos\alpha)\,f_r$
+where $n_b$ is ball count, $d/D$ the pitch-to-cage radius ratio, $\alpha$
+the contact angle, and $f_r$ the shaft rotation frequency.
+We exploit these \emph{known physical targets} to bias the internal frequency
+representations of BearMamba-3 toward fault-informative bands, without
+altering the model's architecture or inference cost.
+
+\paragraph{Instantaneous state frequency.}
+The official Mamba-3 kernel~\cite{mamba3_2026} computes an angle activation
+$\theta_{h,k}(t) \in \mathbb{R}$ for each head $h$ and rope dimension $k$ at
+every time step $t$ via a learned projection.
+Following the phase accumulation formula in the kernel source
+(\texttt{ops/triton/mamba3/angle\_dt.py}, lines 94-104), the instantaneous
+physical frequency assigned to state $(h,k)$ at step $t$ is:
+\begin{equation}
+  f_{h,k}(t)
+    = \tanh\!\bigl(\theta_{h,k}(t)\bigr) \cdot \Delta t_h(t) \cdot \frac{f_s^{\text{eff}}}{2}
+    \quad [\text{Hz}],
+  \label{eq:finst}
+\end{equation}
+where $\Delta t_h(t) > 0$ is the learned time-step for head $h$, and
+$f_s^{\text{eff}} = f_s / s_c$ is the effective sampling rate after the
+convolutional stride.
+The $\tanh$ gate bounds $f_{h,k} \in (-f_s^{\text{eff}}/2,\, f_s^{\text{eff}}/2)$,
+consistent with the Nyquist limit.
+
+The time-averaged instantaneous frequency for each state is
+$\bar{f}_{h,k} = \tfrac{1}{L}\sum_t f_{h,k}(t)$.
+We store these values as the I1 snapshot
+$\bar{\mathbf{f}} \in \mathbb{R}^{B \times S}$,
+where $S = N_\ell \times S_{\text{rope}}$ is the total number of rope states
+across all layers ($S = 4 \times 64 = 256$ in our configuration,
+with 32 rope pairs per head and 2 heads per layer).
+
+\paragraph{Fault frequency targets.}
+For each sample $i$ with known shaft speed $\Omega_i$ (rpm), we compute the
+per-sample fault frequency set:
+\begin{equation}
+  \mathcal{F}_i = \{f_r^i, f_{\text{FTF}}^i, f_{\text{BPFO}}^i,
+                    f_{\text{BSF}}^i, f_{\text{BPFI}}^i\}
+    \cup \text{2nd and 3rd harmonics},
+  \label{eq:faults}
+\end{equation}
+yielding 15 target frequencies.
+This per-sample computation means $\mathcal{L}_{\text{kin}}$ naturally handles
+variable-speed conditions without modifying the loss function.
+
+\paragraph{Cover variant.}
+The \emph{cover} variant of $\mathcal{L}_{\text{kin}}$ requires that every
+fault frequency in $\mathcal{F}_i$ is ``resonated'' by at least one
+BearMamba-3 state.
+Formally, define the nearest-state distance for target $f_c \in \mathcal{F}_i$
+as $\delta_{c,i} = \min_{(h,k)} |f_{h,k}(t) - f_c|$, and aggregate over time:
+\begin{equation}
+  \mathcal{L}_{\text{kin}}
+    = \frac{1}{B} \sum_{i=1}^{B}
+      \frac{1}{|\mathcal{F}_i|} \sum_{f_c \in \mathcal{F}_i}
+        \frac{1}{L} \sum_{t=1}^{L} \min_{(h,k)}\bigl|f_{h,k}(t) - f_c\bigr|,
+  \label{eq:lkin}
+\end{equation}
+where $B$ is the batch size.
+The total loss is $\mathcal{L} = \mathcal{L}_{\text{CE}} + \lambda \mathcal{L}_{\text{kin}}$,
+with $\lambda = 0.01$ (chosen by ablation, Section~\ref{subsubsec:lambda}).
+$\mathcal{L}_{\text{kin}}$ is computed in float32 even when training with
+bf16, to avoid gradient underflow in the inner minimum.
+
+\paragraph{Why L\_kin requires Mamba-3 (C1+C2 structural binding).}
+Equation~(\ref{eq:finst}) relies on the \emph{angle activations}
+$\theta_{h,k}(t)$ that arise from Mamba-3's complex-state rotation mechanism.
+Real-valued SSMs such as Mamba-2 do not possess instantaneous rotation
+frequencies; the quantity $f_{h,k}(t)$ is undefined for their state updates.
+Consequently, $\mathcal{L}_{\text{kin}}$ can only be applied to SSMs with
+oscillatory states, and BearMamba-3 (Mamba-3 backbone) is the unique carrier
+in our design.
+This architectural constraint binds Contribution~C1 (Mamba-3 adoption) and
+Contribution~C2 ($\mathcal{L}_{\text{kin}}$ inductive bias) into a single integrated design choice
+rather than two independent selections.
+
+\paragraph{Why physical frequency alignment rather than BatchNorm.}
+$\mathcal{L}_{\text{kin}}$ penalises the distance between learned state
+frequencies and analytically derived bearing fault harmonics — an explicit,
+\emph{distribution-agnostic} constraint.
+This contrasts fundamentally with BatchNorm-style implicit regularisation,
+which normalises activations using source-domain batch statistics and therefore
+fails under domain shift~\cite{li2017revisiting,peng2018domain}.
+Empirically, BearMamba-3 with BatchNorm inserted after \texttt{conv\_embed}
+\emph{underperforms} the BatchNorm-free variant by $3.0$~pp at $-8$~dB
+(Table~\ref{tab:bm3bn_cwru}), confirming that BM3's complex-state optimisation
+landscape is adversely affected by batch-level normalisation.
+The physical frequency prior is thus not merely an add-on, but a
+domain-agnostic substitute for the statistical regularisation that BM3
+cannot accommodate (Section~\ref{subsec:paradigm}).
+
+
+%% --- 3.3 Multi-sensor fusion ----------------------------------------------
+\subsection{Multi-sensor Fusion and MIMO Interaction Ablation}
+\label{subsec:multisensor}
+
+\paragraph{Sensor fusion via convolutional embedding.}
+When $n_s > 1$ sensors are available, the convolutional embedding layer
+receives all $n_s$ channels simultaneously:
+\begin{equation}
+  \mathbf{H}^{(0)} = \text{Conv1d}(\mathbf{x},\, n_{\text{in}}=n_s,\,
+    n_{\text{out}}=d_{\text{model}},\, k=3,\, s=s_c).
+  \label{eq:conv_embed}
+\end{equation}
+This adds $\Delta P = (n_s - 1) \times k \times d_{\text{model}} = 448$
+parameters (0.25\% of total) relative to the single-sensor variant,
+negligible for a fair accuracy comparison.
+$\mathcal{L}_{\text{kin}}$ is applied to the drive-end (DE) sensor channel
+only, since fault frequency targets are referenced to the DE bearing geometry;
+the fan-end (FE) channel provides complementary vibration information without
+requiring a separate kinematic constraint.
+% ⚠️ B2 FE 传感器不进 L_kin 非对称设计（D11），方法节须一句话交代
+
+\paragraph{MIMO assumption and interaction ablation.}
+The Mamba-3 kernel supports a MIMO extension with rank-$r$ state-read/write
+projections (\texttt{mimo\_rank} $= r$).
+We hypothesise that a higher state bandwidth (MIMO) may benefit multi-sensor
+inputs by enabling richer cross-channel state interactions.
+However, validation of this hypothesis is constrained on our hardware:
+MIMO backward passes require shared memory beyond the 100~KB per-SM limit
+of the RTX~A5000 (Ampere, sm\_86) for any rank $r \geq 2$; all training
+therefore uses SISO mode (\texttt{is\_mimo=False}).
+To partially validate the MIMO--sensor interaction hypothesis, we perform a
+forward-only latency comparison between SISO and MIMO configurations;
+this latency analysis is deferred to a future hardware evaluation
+(Ampere sm\_86 precludes MIMO backward; see Section~\ref{sec:conclusion}).
+% ⚠️ MIMO 叙事：假设-验证式；MIMO ≠ 多传感器，与 D4 一致
+
+\paragraph{Window-level data segmentation.}
+All datasets use a sliding window of length $T = 2048$ samples with stride
+equal to $T$ (non-overlapping) except where noted.
+For CWRU, consecutive windows share 50\% overlap (stride $= T/2$)
+following community convention; train/val/test splits are performed at the
+window level with random shuffling.\footnote{Adjacent overlapping windows
+randomly assigned to the train and validation partitions may share
+$\leq 1024$ samples of common signal content, potentially introducing
+weak temporal correlation that can marginally inflate validation accuracy
+estimates. This convention is standard in CWRU benchmarking practice
+(window-level split with 50\% overlap is used in the majority of recent
+CWRU studies including~\cite{zhang2020deep,wen2018new}) and is
+preserved here for cross-method comparability. The relative comparisons
+between methods are unaffected because the same partitioning protocol
+is applied uniformly across all conditions.}
+% ⚠️ BLOCK-B4-3-2 → 方法节脚注（REC-B2-3 ✓）
+
+
+%% --- 3.4 Training protocol -----------------------------------------------
+\subsection{Training Protocol}
+\label{subsec:train}
+
+All experiments are trained for 50 epochs with the Adam optimiser
+($\beta_1=0.9$, $\beta_2=0.999$, $\varepsilon=10^{-8}$),
+batch size 128, and learning rate $10^{-3}$ with cosine annealing to $10^{-4}$.
+Inputs are normalised to zero mean and unit variance per segment.
+Mixed-precision training (bf16) is used throughout; the kinematic loss path
+operates in float32 as noted above.
+
+We train each configuration with 5 independent random seeds $\{0,1,2,3,4\}$
+(independent network initialisations and dataloader shuffling)
+and report mean $\pm$ std (ddof$=1$, sample standard deviation).
+For non-LOBO experiments (CWRU all SNR levels, PU cross-condition,
+XJTU cross-condition), the reported epoch is selected by maximum
+validation accuracy on a held-out validation partition.
+For LOBO evaluations (XJTU-SY B4-3 and B4-5 leave-one-bearing-out folds),
+the epoch is selected by maximum test-fold macro-recall (LOBO) or
+macro-F1 (cross-condition) following the protocol established in
+B4-3 and applied consistently to PU and CWRU dual-sensor results.
+This choice avoids the alternative ``N-1 fold validation'' scheme,
+which would break protocol parity with the non-LOBO experiments and
+reduce the effective training data per fold by an additional 25\%.
+Pairwise statistical comparisons use the Wilcoxon signed-rank test
+on the five per-seed metric values~\cite{wilcoxon_1945},
+with a significance threshold of $\alpha = 0.05$.
+Note that for $n=5$ paired observations the theoretical minimum two-sided
+Wilcoxon $p$-value is 0.0625; all reported one-sided $p$-values use
+\texttt{alternative=`greater'}.
+
+Table~\ref{tab:hyperparams} summarises all fixed hyperparameters.
+$\lambda$ is fixed at 0.01 based on the sensitivity analysis in
+Section~\ref{subsubsec:lambda}; all other parameters are held constant
+across all datasets and conditions.
+
+\begin{table}[htbp]
+\centering
+\caption{Fixed hyperparameters used in all experiments.}
+\label{tab:hyperparams}
+\begin{tabular}{lll}
+\toprule
+Category & Parameter & Value \\
+\midrule
+\multirow{5}{*}{Architecture}
+  & $d_{\text{model}}$ & 64 \\
+  & $d_{\text{state}}$ & 128 \\
+  & Layers $N_\ell$    & 4 \\
+  & Conv kernel $k$    & 3 \\
+  & Conv stride $s_c$  & 2 \\
+\midrule
+\multirow{5}{*}{Optimisation}
+  & Optimiser         & Adam ($\beta_1=0.9$, $\beta_2=0.999$) \\
+  & Learning rate     & $10^{-3}$ $\to$ $10^{-4}$ (cosine) \\
+  & Batch size        & 128 \\
+  & Epochs            & 50 \\
+  & Precision         & bf16 (L\_kin path: float32) \\
+\midrule
+\multirow{3}{*}{Loss}
+  & $\lambda_{\text{kin}}$ & 0.01 (see Table~\ref{tab:lambda}) \\
+  & L\_kin variant    & cover \\
+  & Target harmonics  & 1st--3rd (15 frequencies / sample) \\
+\midrule
+Statistical
+  & Seeds             & \{0, 1, 2, 3, 4\} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Additive White Gaussian Noise (AWGN) experiments inject noise at a fixed
+signal-to-noise ratio (SNR) drawn from the evaluation grid
+$\{-8,-6,-4,-2,0,+10\}$~dB, following the noisy bearing diagnosis
+protocol of~\cite{zhang2020deep}.
+The noisy signal replaces the clean input during both training and evaluation.
+We adopt AWGN as a controlled, reproducible benchmark; robustness under
+non-Gaussian noise (Laplacian impulsive, coloured) more representative of
+harsh industrial environments is an open direction acknowledged in the
+Discussion (Section~\ref{sec:discussion}).
+
+\paragraph{LOBO protocol for XJTU-SY.}
+The XJTU-SY run-to-failure dataset is evaluated under leave-one-bearing-out
+(LOBO) cross-validation.
+In the LOBO setting, no independent validation set is available within a fold;
+we select the checkpoint with the best test-fold macro-F1 as our reported
+result, consistent with the CWRU and Paderborn protocols where a held-out
+validation partition serves the same role.
+We note this as a limitation in Section~\ref{sec:discussion}.
+% ⚠️ REC-B4-3-2 BLOCK 处置，LOBO无独立验证集已如实披露

@@ -1,0 +1,33 @@
+name: exp_mext_e21b_1dcnn_nobn_cwru_snr-4
+backbone: cnn1d_nobn
+
+# ── data ──────────────────────────────────────────────────────────
+data_dir: ~/论文8/data/cwru_12k_de
+channels: [DE]
+win_len: 2048
+stride: 1024
+val_ratio: 0.2
+label_mode: 4class
+batch_size: 64
+num_workers: 4
+
+# ── model ─────────────────────────────────────────────────────────
+d_model: 64
+n_layers: 4
+n_classes: 4
+conv_stride: 2
+
+# ── training ──────────────────────────────────────────────────────
+epochs: 50
+lr: 3.0e-4
+weight_decay: 1.0e-4
+grad_clip: 1.0
+scheduler: cosine
+
+# ── loss ──────────────────────────────────────────────────────────
+lambda_kin: 0.0
+noise_snr_db: -4.0
+
+# ── experiment ────────────────────────────────────────────────────
+seeds: [0, 1, 2, 3, 4]
+results_dir: ~/论文8/results/exp_mext_e21b_1dcnn_nobn_cwru_snr-4

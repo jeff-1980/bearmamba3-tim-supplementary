@@ -1,0 +1,23 @@
+{
+  "config": "tmpl1tu4coh.yaml",
+  "backbone": "mamba3",
+  "lambda_kin": 0.01,
+  "noise_snr_db": -4.0,
+  "label_mode": "4class",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "best_val_accs": [
+    0.9906542056074766,
+    0.983857264231096,
+    0.9906542056074766,
+    0.9770603228547153,
+    0.9753610875106202
+  ],
+  "mean_best_val_acc": 0.9835174171622769,
+  "std_best_val_acc": 0.0072491857290404626
+}

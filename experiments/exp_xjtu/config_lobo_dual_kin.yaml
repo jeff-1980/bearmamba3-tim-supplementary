@@ -1,0 +1,40 @@
+name: exp_xjtu_lobo_dual_kin
+mode: lobo
+
+# ── data ──────────────────────────────────────────────────────────
+data_root: ~/data_xjtu/XJTU-SY_Bearing_Datasets
+window_size: 2048
+n_sensors: 2          # horizontal + vertical (B4-5 dual-channel)
+
+# ── model ─────────────────────────────────────────────────────────
+d_model: 64
+d_state: 128
+n_layers: 4
+n_classes: 2          # OR=0, IR=1
+conv_stride: 2
+
+# ── training ──────────────────────────────────────────────────────
+batch_size: 64
+num_workers: 4
+epochs: 50
+lr: 3.0e-4
+weight_decay: 1.0e-4
+grad_clip: 1.0
+scheduler: cosine
+
+# ── loss ──────────────────────────────────────────────────────────
+lambda_kin: 0.01
+kin_variant: cover
+# XJTU-SY LDK UER204 (Lei Y. et al., IEEE DataPort — official source)
+# Z=8, d=7.92mm, D=34.55mm (pitch circle), α=0°
+bearing_kwargs:
+  n_balls: 8
+  d: 7.92
+  D: 34.55
+
+# ── ⚠️ XJTU fs_eff assert (D26 mandatory) ─────────────────────────
+fs_eff: 12800.0
+
+# ── experiment ────────────────────────────────────────────────────
+seeds: [0, 1, 2, 3, 4]
+results_dir: ~/论文8/results/exp_xjtu_lobo_dual_kin

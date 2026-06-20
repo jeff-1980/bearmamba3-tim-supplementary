@@ -1,0 +1,19 @@
+{
+  "config": "config_transformer1d_snr-6.yaml",
+  "backbone": "transformer1d",
+  "lambda_kin": 0.0,
+  "noise_snr_db": -6.0,
+  "label_mode": "4class",
+  "seeds": [
+    4
+  ],
+  "best_val_accs": [
+    0.903143585386576,
+    0.9005947323704333,
+    0.9150382327952421,
+    0.8802039082412915,
+    0.8946474086661003
+  ],
+  "mean_best_val_acc": 0.8987255734919286,
+  "std_best_val_acc": 0.01273576607004465
+}

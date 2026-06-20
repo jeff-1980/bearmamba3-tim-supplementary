@@ -1,0 +1,141 @@
+% ============================================================
+% Cover Letter — BearMamba-3 → IEEE TIM
+% Draft: 2026-06-18  (D34, target submission 2026-08-15)
+% ============================================================
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{microtype}
+\usepackage{hyperref}
+\setlength{\parskip}{6pt}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+\thispagestyle{empty}
+
+\textbf{Yi Wang}\\
+College of Engineering, Lishui University\\
+Lishui 323000, Zhejiang, China\\
+E-mail: \texttt{jefflsxy@lsu.edu.cn}\\[6pt]
+\today
+
+\vspace{12pt}
+
+\textbf{To:} Editor-in-Chief\\
+\textit{IEEE Transactions on Instrumentation and Measurement}
+
+\vspace{12pt}
+
+\textbf{Subject:} Submission of original research manuscript ---
+``BearMamba-3: Mamba-3 State-Space Bearing Fault Diagnosis with Kinematic
+Frequency Inductive Bias and Multi-Sensor Fusion''
+
+\vspace{6pt}
+
+Dear Editor,
+
+We are pleased to submit the manuscript entitled \textbf{``BearMamba-3:
+Mamba-3 State-Space Bearing Fault Diagnosis with Kinematic Frequency
+Inductive Bias and Multi-Sensor Fusion''} for consideration as a regular
+paper in \textit{IEEE Transactions on Instrumentation and Measurement}.
+The work is original, has not been previously published, and is not
+currently under consideration elsewhere. All authors have approved the
+submission.
+
+\textbf{Why IEEE TIM.} Reliable on-line vibration measurement and
+condition-monitoring instrumentation lies at the heart of modern
+predictive maintenance, and the diagnostic algorithm running on top of
+the measurement chain must be both physically interpretable and robust
+to changing operating conditions. This work proposes a measurement-stage
+building block---an interpretable state-space diagnostic model with
+explicit physical frequency alignment---that fits naturally within TIM's
+scope of instrumentation, signal-level measurement, and condition-based
+diagnostic methods.
+
+\textbf{Core contributions.} The paper makes three contributions:
+\begin{enumerate}
+\item \textbf{(C1) First adoption of the official Mamba-3 backbone for
+bearing diagnostics.} We show that Mamba-3's complex oscillatory states
+carry instantaneous rotation frequencies $f_{h,k}(t)$ that are absent in
+real-valued SSMs (Mamba-2). This is a structural enabler, not a free
+choice of architecture.
+\item \textbf{(C2) Kinematic frequency inductive bias $\mathcal{L}_{\text{kin}}$
+at the activation level.} The loss aligns Mamba-3 state frequencies with
+analytically derived bearing fault harmonics (BPFO, BPFI, BSF, FTF)
+computed per sample from the shaft speed. The constraint is undefined
+for real-valued SSMs, structurally binding C1 and C2 into a single
+integrated design choice. On CWRU, $\mathcal{L}_{\text{kin}}$ reduces
+inter-seed variance by $14$--$62\%$ across the EAAI SNR grid.
+\item \textbf{(C3) A precision-sample-efficiency trade-off in
+multi-sensor fusion.} Dual-sensor fusion yields a statistically
+significant $+0.70$~pp gain at $-4$~dB on CWRU
+(Wilcoxon $p = 0.031$, $n=5$) and improves inner-race cross-condition
+recall by $+31.6$~pp on XJTU-SY (5/5 seeds), while inducing negative
+transfer in small-sample leave-one-bearing-out folds with a single
+training instance per fault type. This trade-off is reported honestly
+with its data-constraint origin clearly stated.
+\end{enumerate}
+
+\textbf{Honest scope statement.} We explicitly do \emph{not} claim
+within-condition accuracy supremacy on CWRU: a Phase~2b BatchNorm
+ablation shows that 1D-CNN with BatchNorm retains a $\sim$10.5~pp edge
+over BearMamba-3 at $-8$~dB, and removing BatchNorm closes this gap to
+within statistical noise ($p = 0.125$). The paper's distinctive
+contribution is in \emph{out-of-distribution} robustness: under
+variable-speed cross-condition evaluation on XJTU-SY, BearMamba-3 with
+$\mathcal{L}_{\text{kin}}$ achieves macro-F1 of $79.7\%$, $+38.4$~pp
+above 1D-CNN, demonstrating that physical inductive bias provides a
+form of robustness that statistical normalisation cannot replicate.
+
+\textbf{Concurrent related work.} A concurrent preprint by Li et~al.\
+(arXiv:2601.21293, ``Reliability-Calibrated Edge-IoT Early Fault Warning
+for Rotating Machinery with a Physics-Guided Tiny-Mamba Transformer'',
+submitted to \textit{IEEE Internet of Things Journal}) explores
+physics-guided Mamba for edge-IoT deployment and reliability calibration
+via extreme value theory. Our work and theirs occupy complementary
+niches---we focus on activation-level physical embedding and OOD
+robustness in industrial-PC deployments, they focus on sub-1~MB edge
+inference with EVT-calibrated false-alarm control. We discuss this
+relationship explicitly in Sections~II and~V of the manuscript.
+
+\textbf{Reproducibility.} All experiments are reported with five
+independent random seeds, mean $\pm$ standard deviation, Wilcoxon
+signed-rank significance, and exhaustive hyperparameter logging.
+Negative and boundary-condition results
+($\mathcal{L}_{\text{kin}}$ inefficacy on Paderborn discrete-speed and
+XJTU-SY end-of-life regimes; LOBO outer-race degradation under single
+training bearings) are reported alongside positive findings. Code and
+configurations will be released upon acceptance.
+
+\textbf{Author and conflict-of-interest declaration.} Both authors
+contributed substantially to the conception, experimental design,
+analysis, and writing. We declare no conflicts of interest. The work was
+supported by the Natural Science Foundation of Fujian Province under
+Grant 2026J0011040.
+
+\textbf{Suggested reviewers.} We would be glad to suggest the following
+experts whose expertise matches the manuscript's scope, while leaving
+the final selection to your discretion: (i)~prof.\ \textit{[Suggested
+Reviewer 1, name + affiliation + email]}; (ii)~prof.\ \textit{[Suggested
+Reviewer 2]}; (iii)~prof.\ \textit{[Suggested Reviewer 3]}. We have no
+objection to any reviewer chosen by the editorial board.
+
+We hope the work will be of interest to the readership of \textit{IEEE
+Transactions on Instrumentation and Measurement}, and we look forward to
+your editorial decision.
+
+\vspace{12pt}
+
+Yours sincerely,\\[12pt]
+
+\textbf{Yi Wang} (corresponding author)\\
+College of Engineering, Lishui University\\
+Lishui 323000, Zhejiang, China\\
+\texttt{jefflsxy@lsu.edu.cn}\\[6pt]
+on behalf of co-author \textbf{Yongqing Tang}\\
+School of Physics, Mechanics \& Electronics, LongYan University\\
+Longyan, Fujian, China\\
+\texttt{yq\_tang@lyun.edu.cn}
+
+\end{document}

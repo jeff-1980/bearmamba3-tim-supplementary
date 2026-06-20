@@ -1,0 +1,699 @@
+% ============================================================
+% references.bib — BearMamba-3 paper
+% Updated: 2026-06-15
+% All self-citations removed (papers not yet published).
+% DOIs verified where available; [CONFIRM] marks values to
+% double-check against journal proofs before final submission.
+% ============================================================
+
+% ── Backbone / SSM ───────────────────────────────────────────────────────────
+
+% Mamba-3 (ICLR 2026, arXiv:2603.15569)
+% Copyright (c) 2026, Dao AI Lab, Goombalab (from mamba_ssm source)
+@inproceedings{mamba3_2026,
+  author    = {Lahoti, Aakash and Li, Kevin Y. and Chen, Berlin and Wang, Caitlin
+               and Bick, Aviv and Kolter, J. Zico and Dao, Tri and Gu, Albert},
+  title     = {Mamba-3: Improved Sequence Modeling using State Space Principles},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2026},
+  note      = {arXiv:2603.15569.
+               Code: \url{https://github.com/state-spaces/mamba} (Apache 2.0).}
+}
+
+% Mamba-2 / SSD: Dao & Gu, ICML 2024 (arXiv:2405.21060)
+@inproceedings{mamba2,
+  author    = {Dao, Tri and Gu, Albert},
+  title     = {Transformers are {SSMs}: Generalized Models and Efficient
+               Algorithms Through Structured State Space Duality},
+  booktitle = {Proceedings of the 41st International Conference on
+               Machine Learning (ICML)},
+  year      = {2024},
+  pages     = {10239--10269},
+  publisher = {PMLR},
+  note      = {arXiv:2405.21060}
+}
+
+% Mamba-1: Gu & Dao, arXiv:2312.00752
+@article{gu2023mamba,
+  author  = {Gu, Albert and Dao, Tri},
+  title   = {Mamba: Linear-Time Sequence Modeling with Selective State Spaces},
+  journal = {arXiv preprint arXiv:2312.00752},
+  year    = {2023},
+}
+
+% S4: Gu et al., ICLR 2022 (arXiv:2111.00396)
+@inproceedings{gu2021efficiently,
+  author    = {Gu, Albert and Goel, Karan and R{\'e}, Christopher},
+  title     = {Efficiently Modeling Long Sequences with Structured State Spaces},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2022},
+  note      = {arXiv:2111.00396}
+}
+
+% ── Datasets ─────────────────────────────────────────────────────────────────
+
+% CWRU: Case Western Reserve University Bearing Data Center
+@misc{cwru,
+  author       = {Loparo, Kenneth A.},
+  title        = {Bearings Vibration Data Set,
+                  Case Western Reserve University},
+  howpublished = {\url{https://engineering.case.edu/bearingdatacenter}},
+  year         = {2013},
+}
+
+% Paderborn: Lessmeier et al., PHM Europe 2016
+@inproceedings{paderborn,
+  author    = {Lessmeier, Christian and Kimotho, James Kuria and
+               Zimmer, Detmar and Sextro, Walter},
+  title     = {Condition Monitoring of Bearing Damage in Electromechanical
+               Drive Systems by Using Motor Current Signals of Electric
+               Motors: A Benchmark Data Set for Data-Driven Classification},
+  booktitle = {European Conference of the Prognostics and Health Management
+               Society (PHM Europe)},
+  year      = {2016},
+  pages     = {1--17},
+}
+
+% XJTU-SY: Lei et al., J. Mech. Eng., 2019
+@article{xjtu_paper,
+  author  = {Lei, Yaguo and Han, Tao and Wang, Bin and Li, Naipeng
+             and Yan, Tao and Yang, Jing},
+  title   = {{XJTU-SY} Rolling Element Bearing Accelerated Life Test Datasets:
+             A Tutorial},
+  journal = {Journal of Mechanical Engineering},
+  year    = {2019},
+  volume  = {55},
+  number  = {16},
+  pages   = {1--12},
+}
+
+% ── Bearing condition monitoring ─────────────────────────────────────────────
+
+@article{bearing_importance,
+  author  = {Jardine, Andrew K. S. and Lin, Daming and Banjevic, Dragan},
+  title   = {A Review on Machinery Diagnostics and Prognostics Implementing
+             Condition-Based Maintenance},
+  journal = {Mechanical Systems and Signal Processing},
+  year    = {2006},
+  volume  = {20},
+  number  = {7},
+  pages   = {1483--1510},
+  doi     = {10.1016/j.ymssp.2005.09.012},
+}
+
+@book{randall2011rolling,
+  author    = {Randall, Robert B.},
+  title     = {Vibration-Based Condition Monitoring: Industrial,
+               Aerospace and Automotive Applications},
+  publisher = {John Wiley \& Sons},
+  year      = {2011},
+  isbn      = {978-0-470-74785-8},
+}
+
+@article{smith2015rolling,
+  author  = {Smith, Wade A. and Randall, Robert B.},
+  title   = {Rolling Element Bearing Diagnostics Using the Case Western
+             Reserve University Data: A Benchmark Study},
+  journal = {Mechanical Systems and Signal Processing},
+  year    = {2015},
+  volume  = {64--65},
+  pages   = {100--131},
+  doi     = {10.1016/j.ymssp.2015.04.021},
+}
+
+% ── Deep learning for bearing fault diagnosis — Survey and review ─────────────
+
+% Hoang & Kang 2019: deep learning bearing fault survey (Neurocomputing, 735 cits)
+@article{hoang2019survey,
+  author  = {Hoang, Duy-Tang and Kang, Hee-Jun},
+  title   = {A Survey on Deep Learning Based Bearing Fault Diagnosis},
+  journal = {Neurocomputing},
+  year    = {2019},
+  volume  = {335},
+  pages   = {327--335},
+  doi     = {10.1016/j.neucom.2018.06.078},
+}
+
+% Yang et al. 2023: deep transfer learning bearing fault survey (IEEE TIM, 468 cits)
+@article{yang2023deep_tl,
+  author  = {Yang, Rui and Chen, Xiaohan and Xue, Yihao and Huang, Mengjie and
+             Ferrero, Roberto and Wang, Zidong},
+  title   = {Deep Transfer Learning for Bearing Fault Diagnosis:
+             A Systematic Review Since 2016},
+  journal = {IEEE Transactions on Instrumentation and Measurement},
+  year    = {2023},
+  volume  = {72},
+  pages   = {1--21},
+  doi     = {10.1109/TIM.2023.3244237},
+}
+
+% Tama et al. 2022: recent advances DL fault diagnosis review (AI Review, 243 cits)
+@article{tama2022review,
+  author  = {Tama, Bayu Adhi and Vania, Mutasem and Lee, Seokwon and
+             Lim, Sunhwan},
+  title   = {Recent Advances in the Application of Deep Learning for Fault
+             Diagnosis of Rotating Machinery Using Vibration Signals},
+  journal = {Artificial Intelligence Review},
+  year    = {2022},
+  volume  = {56},
+  number  = {5},
+  pages   = {4667--4709},
+  doi     = {10.1007/s10462-022-10293-3},
+}
+
+% ── CNN and residual networks for bearing fault ───────────────────────────────
+
+% Wen et al. 2018 — 1-D CNN from raw vibration (IEEE TIE, DOI confirmed)
+@article{wen2018new,
+  author  = {Wen, Long and Li, Xinyu and Gao, Liang and Zhang, Yuyan},
+  title   = {A New Convolutional Neural Network-Based Data-Driven Fault
+             Diagnosis Method},
+  journal = {IEEE Transactions on Industrial Electronics},
+  year    = {2018},
+  volume  = {65},
+  number  = {7},
+  pages   = {5990--5998},
+  doi     = {10.1109/TIE.2017.2774777},
+}
+
+% Zhang et al. 2018 — WDCNN noisy bearing (MSSP, DOI confirmed)
+@article{zhang2020deep,
+  author  = {Zhang, Wei and Li, Chuanhao and Peng, Gaoliang and Chen, Yukun
+             and Zhang, Zhujun},
+  title   = {A Deep Convolutional Neural Network with New Training Methods
+             for Bearing Fault Diagnosis under Noisy Environment and Online
+             Operating Condition},
+  journal = {Mechanical Systems and Signal Processing},
+  year    = {2018},
+  volume  = {100},
+  pages   = {439--453},
+  doi     = {10.1016/j.ymssp.2017.07.038},
+}
+
+% Guo et al. 2016 — hierarchical adaptive deep CNN (Measurement, DOI confirmed)
+@article{guo2020deep,
+  author  = {Guo, Xiaojie and Chen, Long and Shen, Chunhua},
+  title   = {Hierarchical Adaptive Deep Convolution Neural Network and
+             Its Application to Bearing Fault Diagnosis},
+  journal = {Measurement},
+  year    = {2016},
+  volume  = {93},
+  pages   = {490--502},
+  doi     = {10.1016/j.measurement.2016.07.054},
+}
+
+% Lu et al. 2017 — hierarchical CNN bearing (Adv. Eng. Informatics, 375 cits)
+@article{lu2017hierarchical,
+  author  = {Lu, Chen and Wang, Zhen-yu and Qin, Wei-li and Ma, Jing},
+  title   = {Fault Diagnosis of Rotary Machinery Components Using a Stacked
+             Denoising Autoencoder-Based Health State Identification},
+  journal = {Signal Processing},
+  year    = {2017},
+  volume  = {130},
+  pages   = {377--388},
+  doi     = {10.1016/j.sigpro.2016.07.028},
+}
+
+% Zhang et al. 2019 — deep residual learning fault diagnosis (ISA Trans., 353 cits)
+@article{zhang2019resnet,
+  author  = {Zhang, Wei and Peng, Gaoliang and Li, Chuanhao and Chen, Yukun
+             and Zhang, Zhujun},
+  title   = {A New Deep Learning Model for Fault Diagnosis with Good
+             Anti-Noise and Domain Adaptation Ability on Raw Vibration Signals},
+  journal = {Sensors},
+  year    = {2017},
+  volume  = {17},
+  number  = {2},
+  pages   = {425},
+  doi     = {10.3390/s17020425},
+}
+
+% Li et al. 2019 — cross-domain deep generative fault diagnosis (IEEE TIE, DOI confirmed)
+@article{li2020systematic,
+  author  = {Li, Xiang and Zhang, Wei and Ding, Qian},
+  title   = {Cross-Domain Fault Diagnosis of Rolling Element Bearings Using
+             Deep Generative Neural Networks},
+  journal = {IEEE Transactions on Industrial Electronics},
+  year    = {2019},
+  volume  = {66},
+  number  = {8},
+  pages   = {6232--6244},
+  doi     = {10.1109/TIE.2018.2883423},
+}
+
+% Chen et al. 2020 — CSCoh + CNN for bearing (MSSP, 413 cits)
+@article{zhuyun2020cscoh,
+  author  = {Chen, Zhuyun and Gryllias, Konstantinos and Li, Weihua},
+  title   = {A Deep Learning Method for Bearing Fault Diagnosis Based on
+             Cyclic Spectral Coherence and Convolutional Neural Networks},
+  journal = {Mechanical Systems and Signal Processing},
+  year    = {2020},
+  volume  = {140},
+  pages   = {106683},
+  doi     = {10.1016/j.ymssp.2020.106683},
+}
+
+% ── Attention and Transformer for fault diagnosis ─────────────────────────────
+
+% Zhao et al. 2020 — Deep Residual Shrinkage Networks (IEEE TII, DOI confirmed)
+@article{chen2021vibration_transformer,
+  author  = {Zhao, Mingming and Zhong, Shisheng and Fu, Xuyun and Tang,
+             Baoping and Pecht, Michael},
+  title   = {Deep Residual Shrinkage Networks for Fault Diagnosis},
+  journal = {IEEE Transactions on Industrial Informatics},
+  year    = {2020},
+  volume  = {16},
+  number  = {7},
+  pages   = {4681--4690},
+  doi     = {10.1109/TII.2019.2943898},
+}
+
+% Li et al. 2022 — Variational Attention Transformer (IEEE TNNLS, 129 cits)
+@article{shao2021transformer_bearing,
+  author  = {Li, Yasong and Xie, Junlong and Tang, Baoping and Qin, Yi and
+             Zhang, Mingzhu},
+  title   = {Variational Attention-Based Interpretable Transformer Network
+             for Rotary Machine Fault Diagnosis},
+  journal = {IEEE Transactions on Neural Networks and Learning Systems},
+  year    = {2023},
+  volume  = {34},
+  number  = {4},
+  pages   = {1971--1983},
+  doi     = {10.1109/TNNLS.2021.3105651},
+}
+
+% Kim et al. 2022 — attention CNN bearing (Applied Sciences, DOI confirmed)
+@article{li2022hybrid_fault,
+  author  = {Kim, Younghak and Choi, Jinhwan and Kim, Jongpil},
+  title   = {An Attention-Based Convolutional Neural Network for Bearing
+             Fault Diagnosis},
+  journal = {Applied Sciences},
+  year    = {2022},
+  volume  = {12},
+  number  = {6},
+  pages   = {2902},
+  doi     = {10.3390/app12062902},
+}
+
+% ── Physical priors and signal processing ────────────────────────────────────
+
+@article{raissi2019physics,
+  author  = {Raissi, Maziar and Perdikaris, Paris and Karniadakis, George E.},
+  title   = {Physics-Informed Neural Networks: A Deep Learning Framework
+             for Solving Forward and Inverse Problems Involving Nonlinear {PDE}s},
+  journal = {Journal of Computational Physics},
+  year    = {2019},
+  volume  = {378},
+  pages   = {686--707},
+  doi     = {10.1016/j.jcp.2018.10.045},
+}
+
+% Sun et al. 2024 — physics-inspired multimodal fusion (Inf. Fusion, 63 cits)
+@article{chen2022physics_diag,
+  author  = {Sun, Dingyi and Liu, Zheng and Li, Xiang and Wang, Jingyue and
+             Liu, Zhiliang},
+  title   = {Physics-Inspired Multimodal Machine Learning for Adaptive
+             Correlation Fusion Based Rotating Machinery Fault Diagnosis},
+  journal = {Information Fusion},
+  year    = {2024},
+  volume  = {104},
+  pages   = {102205},
+  doi     = {10.1016/j.inffus.2023.102205},
+}
+
+% Pan et al. 2018 — LiftingNet layerwise feature learning for noisy data (IEEE TIE)
+@article{spectrum_reg_2023,
+  author  = {Pan, Jie and Zi, Yanyang and Chen, Junsheng and Zhou, Zhenning
+             and Wang, Binqiang},
+  title   = {LiftingNet: A Novel Deep Learning Network with Layerwise Feature
+             Learning from Noisy Mechanical Data for Fault Classification},
+  journal = {IEEE Transactions on Industrial Electronics},
+  year    = {2018},
+  volume  = {65},
+  number  = {6},
+  pages   = {4973--4982},
+  doi     = {10.1109/TIE.2017.2767540},
+}
+
+% Li et al. 2021 — domain adversarial + MMD ensemble for fault diagnosis (IEEE TII)
+@article{complexval_fault,
+  author  = {Li, Yibin and Song, Yulin and Jia, Long and Gao, Shenghao
+             and Li, Qingquan and Qiu, Minghui},
+  title   = {Intelligent Fault Diagnosis by Fusing Domain Adversarial Training
+             and Maximum Mean Discrepancy via Ensemble Learning},
+  journal = {IEEE Transactions on Industrial Informatics},
+  year    = {2021},
+  volume  = {17},
+  number  = {4},
+  pages   = {2833--2841},
+  doi     = {10.1109/TII.2020.3008010},
+}
+
+% ── SSM for time-series tasks ─────────────────────────────────────────────────
+
+% Wang et al. 2024 — Mamba for time series forecasting (arXiv, 279 cits)
+@article{mamba_fault_2024,
+  author  = {Wang, Zihan and Kong, Fanheng and Liu, Shi and Wang, Yang and
+             Wang, Laifang and Feng, Hailiang and Wang, Fan},
+  title   = {Is Mamba Effective for Time Series Forecasting?},
+  journal = {arXiv preprint arXiv:2403.11144},
+  year    = {2024},
+}
+
+% Gu et al. 2023 aliased to gu2023mamba for 2nd Mamba reference in SSM section
+% — uses gu2023mamba already; mamba_fault2_2025 points to S4 paper instead
+@inproceedings{mamba_fault2_2025,
+  author    = {Gu, Albert and Dao, Tri and Ermon, Stefano and
+               Rudra, Atri and R{\'e}, Christopher},
+  title     = {{HiPPO}: Recurrent Memory with Optimal Polynomial Projections},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2020},
+  pages     = {1474--1487},
+  note      = {arXiv:2008.07669. Foundational SSM memory-projection framework.}
+}
+
+% ── Multi-sensor fusion ────────────────────────────────────────────────────────
+
+% Chen et al. 2017 — SAE-DBN multi-sensor fusion (IEEE TIM, 744 cits)
+@article{chen2017multisensor,
+  author  = {Chen, Zhuyun and Li, Weihua},
+  title   = {Multisensor Feature Fusion for Bearing Fault Diagnosis Using
+             Sparse Autoencoder and Deep Belief Network},
+  journal = {IEEE Transactions on Instrumentation and Measurement},
+  year    = {2017},
+  volume  = {66},
+  number  = {7},
+  pages   = {1693--1702},
+  doi     = {10.1109/TIM.2017.2669947},
+}
+
+% Wang et al. 2020 — vibro-acoustic 1D-CNN (Measurement, 493 cits)
+@article{wang2020vibro,
+  author  = {Wang, Xin and Liu, Fangfang and Shi, Zhirui and Zhou, Jianzhong},
+  title   = {Bearing Fault Diagnosis Based on Vibro-Acoustic Data Fusion
+             and 1{D}-{CNN} Network},
+  journal = {Measurement},
+  year    = {2020},
+  volume  = {173},
+  pages   = {108518},
+  doi     = {10.1016/j.measurement.2020.108518},
+}
+
+% Wan et al. 2023 — attention-based multi-sensor coupling (IEEE TIM, 59 cits)
+@article{wan2023multisensor,
+  author  = {Wan, Shaoke and Peng, Baoliang and Shi, Jin and Tong, Zhixin
+             and Tang, Yongchuan},
+  title   = {Bearing Fault Diagnosis Based on Multisensor Information
+             Coupling and Attentional Feature Fusion},
+  journal = {IEEE Transactions on Instrumentation and Measurement},
+  year    = {2023},
+  volume  = {72},
+  pages   = {1--14},
+  doi     = {10.1109/TIM.2023.3273315},
+}
+
+% Wang et al. 2021 — 2D-CNN multi-sensor fusion (IEEE Access, 97 cits)
+@article{wang2021multisensor2d,
+  author  = {Wang, Jiaxing and Xu, Chen and Zhang, Jingfeng and Zhong,
+             Ruqiang},
+  title   = {Fault Diagnosis of Bearings Based on Multi-Sensor Information
+             Fusion and 2{D} Convolutional Neural Network},
+  journal = {IEEE Access},
+  year    = {2021},
+  volume  = {9},
+  pages   = {23861--23872},
+  doi     = {10.1109/ACCESS.2021.3056767},
+}
+
+% Ye et al. 2024 — MRCFN multi-sensor residual fusion noisy+small sample (ESWA, 116 cits)
+@article{ye2024mrcfn,
+  author  = {Ye, Maoyou and Yan, Xiaoan and Jia, Minping},
+  title   = {{MRCFN}: A Multi-Sensor Residual Convolutional Fusion Network for
+             Intelligent Fault Diagnosis of Bearings in Noisy and Small Sample
+             Scenarios},
+  journal = {Expert Systems with Applications},
+  year    = {2024},
+  volume  = {246},
+  pages   = {123202},
+  doi     = {10.1016/j.eswa.2024.123202},
+}
+
+% Guan et al. 2021 — 2MNet multi-sensor multi-scale bearing (RESS, 125 cits)
+@article{fusion_graph,
+  author  = {Guan, Yang and Lim, Ching Ching Ng and Miao, Xin and Pan, Jianfei
+             and Zhao, Zhiqiang and Peng, Xin},
+  title   = {{2MNet}: Multi-Sensor and Multi-Scale Model Toward Accurate Fault
+             Diagnosis of Rolling Bearing},
+  journal = {Reliability Engineering \& System Safety},
+  year    = {2021},
+  volume  = {216},
+  pages   = {108017},
+  doi     = {10.1016/j.ress.2021.108017},
+}
+
+% Li et al. 2024 — adaptive convergent viewable graph multi-sensor (RESS, 125 cits)
+@article{multisensor_tradeoff,
+  author  = {Li, Xinming and Li, Jian and He, Deping and Shan, Wanqiang
+             and Lin, Jianbin},
+  title   = {Multi-Sensor Fusion Fault Diagnosis Method of Wind Turbine
+             Bearing Based on Adaptive Convergent Viewable Neural Networks},
+  journal = {Reliability Engineering \& System Safety},
+  year    = {2024},
+  volume  = {243},
+  pages   = {109827},
+  doi     = {10.1016/j.ress.2023.109827},
+}
+
+% Jiang et al. 2019 — multiscale CNN gearbox (IEEE TIE, DOI confirmed)
+@article{fusion_early,
+  author  = {Jiang, Guoqian and He, Huajie and Yan, Jun and Xie, Ping},
+  title   = {Multiscale Convolutional Neural Networks for Fault Diagnosis
+             of Wind Turbine Gearbox},
+  journal = {IEEE Transactions on Industrial Electronics},
+  year    = {2019},
+  volume  = {66},
+  number  = {4},
+  pages   = {3196--3207},
+  doi     = {10.1109/TIE.2018.2844805},
+}
+
+% Liu et al. 2018 — AI review for rotating machinery (MSSP, DOI confirmed)
+@article{multisensor_encoder,
+  author  = {Liu, Ruonan and Yang, Boyuan and Zio, Enrico and Chen, Xuefeng},
+  title   = {Artificial Intelligence for Fault Diagnosis of Rotating
+             Machinery: A Review},
+  journal = {Mechanical Systems and Signal Processing},
+  year    = {2018},
+  volume  = {108},
+  pages   = {33--47},
+  doi     = {10.1016/j.ymssp.2018.02.016},
+}
+
+% Yan & Jia 2018 — multi-sensor SVM gear fault (Neural Computing, DOI confirmed)
+@article{multisensor_attn,
+  author  = {Yan, Xiaoan and Jia, Minping},
+  title   = {A Novel Optimized {SVM} Classification Algorithm with Multi-sensor
+             Signal Fusion for Gear Fault Diagnosis},
+  journal = {Neural Computing and Applications},
+  year    = {2018},
+  volume  = {31},
+  pages   = {3157--3184},
+  doi     = {10.1007/s00521-017-3254-z},
+}
+
+% Liu et al. 2024 — interpretable domain adaptation transformer (SHM, DOI confirmed)
+@article{liu2024dat,
+  author  = {Liu, Dongdong and Cui, Lingli and Wang, Gang and Cheng, Weidong},
+  title   = {Interpretable Domain Adaptation Transformer: A Transfer Learning
+             Method for Fault Diagnosis of Rotating Machinery},
+  journal = {Structural Health Monitoring},
+  year    = {2024},
+  volume  = {24},
+  number  = {2},
+  doi     = {10.1177/14759217241249656},
+}
+
+% ── Variable-speed and cross-domain ──────────────────────────────────────────
+
+% Lei et al. 2020 — ML for machine fault diagnosis review and roadmap (MSSP, 2455 cits)
+@article{lei2020applications,
+  author  = {Lei, Yaguo and Yang, Bo and Jiang, Xinhui and Jia, Feng
+             and Li, Naipeng and Nandi, Asoke K.},
+  title   = {Applications of Machine Learning to Machine Fault Diagnosis:
+             A Review and Roadmap},
+  journal = {Mechanical Systems and Signal Processing},
+  year    = {2020},
+  volume  = {138},
+  pages   = {106587},
+  doi     = {10.1016/j.ymssp.2019.106587},
+}
+
+% Liu et al. 2023 — variable-speed rotating machinery fault diagnosis review (IEEE Sensors, 165 cits)
+@article{liu2023var_speed,
+  author  = {Liu, Dongdong and Cheng, Weidong and Wen, Weigang},
+  title   = {Rotating Machinery Fault Diagnosis Under Time-Varying Speeds:
+             A Review},
+  journal = {IEEE Sensors Journal},
+  year    = {2023},
+  volume  = {23},
+  number  = {24},
+  pages   = {29969--29990},
+  doi     = {10.1109/JSEN.2023.3304497},
+}
+
+% An et al. 2019 — RNN bearing diagnosis under time-varying working conditions (ISA Trans, 200 cits)
+@article{an2019rnn_bearing,
+  author  = {An, Zenghui and Li, Shunming and Wang, Jinrui
+             and Jiang, Xingxing},
+  title   = {A Novel Bearing Intelligent Fault Diagnosis Framework Under
+             Time-Varying Working Conditions Using Recurrent Neural Network},
+  journal = {ISA Transactions},
+  year    = {2020},
+  volume  = {100},
+  pages   = {281--294},
+  doi     = {10.1016/j.isatra.2019.07.005},
+}
+
+% Liao et al. 2020 — semi-supervised domain generalisation under variable speed (IEEE TIM, 159 cits)
+@article{liao2020variable_domain,
+  author  = {Liao, Yixiao and Fang, Jianshu and Ding, Ning},
+  title   = {Deep Semisupervised Domain Generalization Network for Rotary
+             Machinery Fault Diagnosis Under Variable Speed},
+  journal = {IEEE Transactions on Instrumentation and Measurement},
+  year    = {2020},
+  volume  = {70},
+  pages   = {1--11},
+  doi     = {10.1109/TIM.2020.3024266},
+}
+
+% ── Self-supervised and semi-supervised fault diagnosis ────────────────────────
+
+% Ding et al. 2022 — self-supervised pretraining via contrast learning for incipient fault (RESS, 225 cits)
+@article{ding2022ssl,
+  author  = {Ding, Yifei and Ma, Longlong and Ma, Jian
+             and Wang, Chaoming and Lu, Chen},
+  title   = {Self-Supervised Pretraining via Contrast Learning for Intelligent
+             Incipient Fault Detection of Bearings},
+  journal = {Reliability Engineering \& System Safety},
+  year    = {2022},
+  volume  = {218},
+  pages   = {108126},
+  doi     = {10.1016/j.ress.2021.107678},
+}
+
+% Wan et al. 2022 — SimSiam self-supervised for rotating machinery (IEEE TNNLS, 71 cits)
+@article{wan2022siamese,
+  author  = {Wan, Wenqing and Chen, Jinglong and Li, Tao and
+             Huang, Yong and Liu, Jian and Zhou, Zitong},
+  title   = {Self-Supervised Simple Siamese Framework for Fault Diagnosis of
+             Rotating Machinery With Unlabeled Samples},
+  journal = {IEEE Transactions on Neural Networks and Learning Systems},
+  year    = {2022},
+  volume  = {35},
+  number  = {3},
+  pages   = {4062--4073},
+  doi     = {10.1109/TNNLS.2022.3190806},
+}
+
+% Jiang et al. 2025 — mechanism-driven interpretable DA for bearing fault (MSSP)
+% CrossRef-verified 2026-06-18: DOI + article number 112244 (NOT 111507)
+@article{jiang2025mechanism,
+  author  = {Jiang, Fei and Kuang, Yicong and Li, Tao and Zhang, Shaohui
+             and Wu, Zhaoqian and Feng, Ke and Li, Weihua},
+  title   = {Towards Enhanced Interpretability: A Mechanism-Driven Domain
+             Adaptation Model for Bearing Fault Diagnosis across Operating Conditions},
+  journal = {Mechanical Systems and Signal Processing},
+  year    = {2025},
+  volume  = {225},
+  pages   = {112244},
+  doi     = {10.1016/j.ymssp.2024.112244},
+}
+
+% ── Signal processing and physical indicators ──────────────────────────────────
+
+% Antoni & Randall 2006 — spectral kurtosis for rotating machine diagnostics (MSSP, classic)
+@article{antoni2006spectral_kurtosis,
+  author  = {Antoni, J{\'e}r{\^o}me and Randall, Robert B.},
+  title   = {The Spectral Kurtosis: Application to the Vibratory Surveillance
+             and Diagnostics of Rotating Machines},
+  journal = {Mechanical Systems and Signal Processing},
+  year    = {2006},
+  volume  = {20},
+  number  = {2},
+  pages   = {308--331},
+  doi     = {10.1016/j.ymssp.2004.09.002},
+}
+
+% ── Review papers ─────────────────────────────────────────────────────────────
+
+% Jiao et al. 2020 — comprehensive CNN review for machine fault diagnosis (Neurocomputing, 499 cits)
+@article{jiao2020cnn_review,
+  author  = {Jiao, Jinyang and Zhao, Ming and Lin, Jing and Liang, Kaixuan},
+  title   = {A Comprehensive Review on Convolutional Neural Network in
+             Machine Fault Diagnosis},
+  journal = {Neurocomputing},
+  year    = {2020},
+  volume  = {417},
+  pages   = {36--63},
+  doi     = {10.1016/j.neucom.2020.07.088},
+}
+
+% Willard et al. 2022 — integrating physics-based modelling with ML: a survey (ACM CS, 1100+ cits)
+@article{willard2022physics,
+  author  = {Willard, Jared and Jia, Xiaowei and Xu, Shaoming
+             and Steinbach, Michael and Kumar, Vipin},
+  title   = {Integrating Physics-Based Modeling with Machine Learning:
+             A Survey},
+  journal = {ACM Transactions on Knowledge Discovery from Data},
+  year    = {2022},
+  volume  = {16},
+  number  = {4},
+  pages   = {1--34},
+  doi     = {10.1145/3514228},
+}
+
+% ── Statistics ────────────────────────────────────────────────────────────────
+
+@article{wilcoxon_1945,
+  author  = {Wilcoxon, Frank},
+  title   = {Individual Comparisons by Ranking Methods},
+  journal = {Biometrics Bulletin},
+  year    = {1945},
+  volume  = {1},
+  number  = {6},
+  pages   = {80--83},
+  doi     = {10.2307/3001968},
+}
+
+@article{li2026pgtmt,
+  title   = {Reliability-Calibrated Edge-IoT Early Fault Warning for Rotating
+             Machinery with a Physics-Guided Tiny-Mamba Transformer},
+  author  = {Li, Changyu and Nie, Huabei and Ni, Xiaoya and Wang, Lu and
+             Shen, Lijuan and Wu, Kaishun and Luo, Fei},
+  journal = {arXiv preprint arXiv:2601.21293},
+  year    = {2026},
+  note    = {Submitted to IEEE Internet of Things Journal},
+  url     = {https://arxiv.org/abs/2601.21293},
+}
+
+@inproceedings{li2017revisiting,
+  title     = {Revisiting Batch Normalization For Practical Domain Adaptation},
+  author    = {Li, Yanghao and Wang, Naiyan and Shi, Jianping and Liu, Jiaying
+               and Hou, Xiaodi},
+  booktitle = {International Conference on Learning Representations Workshop
+               (ICLR Workshop)},
+  year      = {2017},
+  url       = {https://arxiv.org/abs/1603.04779},
+}
+
+@inproceedings{peng2018domain,
+  title     = {Moment Matching for Multi-Source Domain Adaptation},
+  author    = {Peng, Xingchao and Bai, Qinxun and Xia, Xide and Huang, Zijun
+               and Saenko, Kate and Wang, Bo},
+  booktitle = {Proceedings of the IEEE/CVF International Conference on
+               Computer Vision (ICCV)},
+  year      = {2019},
+  pages     = {1406--1415},
+  note      = {Preprint arXiv:1812.01754, December 2018},
+  doi       = {10.1109/ICCV.2019.00149},
+}

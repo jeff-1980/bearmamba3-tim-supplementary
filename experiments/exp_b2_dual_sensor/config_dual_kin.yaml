@@ -1,0 +1,40 @@
+name: exp_b2_dual_kin
+
+# ── data ──────────────────────────────────────────────────────────
+data_dir: ~/论文8/data/cwru_12k_de
+channels: [DE, FE]         # dual-sensor: drive-end + fan-end
+win_len: 2048
+stride: 1024
+val_ratio: 0.2
+batch_size: 64
+num_workers: 4
+
+# ── model ─────────────────────────────────────────────────────────
+d_model: 64
+d_state: 128
+n_layers: 4
+n_classes: 4
+conv_stride: 2
+
+# ── training ──────────────────────────────────────────────────────
+epochs: 50
+lr: 3.0e-4
+weight_decay: 1.0e-4
+grad_clip: 1.0
+scheduler: cosine
+
+# ── loss ──────────────────────────────────────────────────────────
+noise_snr_db: 0.0
+lambda_kin: 0.01
+kin_variant: cover
+# bearing_kwargs: DE-end fault frequencies (faults are at drive-end bearing)
+# CWRU-DE SKF 6205: n=9, d=0.3126"=7.938mm, D=1.537"=39.040mm pitch
+# ⚠️ Do NOT use FE 6203 params (D=28.5mm) — the fault is at the DE bearing
+bearing_kwargs:
+  n_balls: 9
+  d: 7.938
+  D: 39.040
+
+# ── experiment ────────────────────────────────────────────────────
+seeds: [0, 1, 2, 3, 4]
+results_dir: ~/论文8/results/exp_b2_dual_kin

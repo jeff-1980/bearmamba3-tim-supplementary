@@ -1,0 +1,93 @@
+% ============================================================
+% BearMamba-3 — Main Paper
+% Target: IEEE Transactions on Instrumentation and Measurement (TIM, IF 5.6)
+% Submission deadline: 2026-08-15  (D34, supersedes original MSSP 2026-09-30 plan)
+% Draft: 2026-06-15 (elsarticle) → 2026-06-18 (IEEEtran, D34)
+% ============================================================
+\documentclass[journal,11pt,a4paper,draftcls,onecolumn]{IEEEtran}
+
+\usepackage{lineno,hyperref}
+\modulolinenumbers[5]
+
+% Math
+\usepackage{amsmath,amssymb,bm}
+\DeclareMathOperator*{\argmin}{argmin}
+
+% Tables
+\usepackage{booktabs,tabularx,multirow,threeparttable}
+
+% Figures
+\usepackage{graphicx}
+\graphicspath{{../results/figures/}}
+
+% Lists
+\usepackage{enumitem}
+
+% Misc
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{soul}        % for \hl{}
+
+% ---- BibTeX ----
+\bibliographystyle{IEEEtran}
+
+% ── helpers for review mode ───────────────────────────────────────────────────
+\newcommand{\TODO}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}
+\newcommand{\CITE}[1]{\textcolor{blue}{\textbf{[CITE: #1]}}}
+\newcommand{\NOTE}[1]{\textcolor{gray}{\small [NOTE: #1]}}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\begin{document}
+
+\title{BearMamba-3: Mamba-3 State-Space Bearing Fault Diagnosis with
+       Kinematic Frequency Inductive Bias and Multi-Sensor Fusion}
+
+\author{Yi~Wang
+        and~Yongqing~Tang%
+\thanks{Y. Wang is with the College of Engineering, Lishui University,
+        Lishui 323000, Zhejiang, China (corresponding author, e-mail:
+        jefflsxy@lsu.edu.cn).}%
+\thanks{Y. Tang is with the School of Physics, Mechanics \& Electronics,
+        LongYan University, Longyan, Fujian, China
+        (e-mail: yq\_tang@lyun.edu.cn).}}
+
+\maketitle
+
+\input{abstract}
+
+\linenumbers
+
+% ─────────────────────────────────────────────────────────────────────────────
+\input{section1_introduction}
+\input{section2_related}
+\input{section3_physics}
+\input{section3_method}
+\input{section4_experiments}
+\input{section5_discussion}
+\input{section5_conclusion}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section*{Data Availability}
+The three benchmark datasets used in this study are publicly available
+from their original repositories: the Case Western Reserve University
+(CWRU) Bearing Data Center
+(\url{https://engineering.case.edu/bearingdatacenter}),
+the Paderborn University KAt-DataCenter
+(\url{https://mb.uni-paderborn.de/kat/forschung/kat-datacenter}),
+and the XJTU-SY Rolling Element Bearing Accelerated Life Test Datasets
+on IEEE DataPort.
+Source code, hyperparameter configurations, trained model checkpoints,
+and the experimental snapshots underlying every figure and table
+(I1 frequency snapshots and t-SNE feature caches) will be deposited to
+IEEE DataPort upon acceptance with a citable DOI, and are available for
+peer review via an anonymous repository linked in the cover letter.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section*{Acknowledgements}
+This work was supported by the Natural Science Foundation of Fujian Province
+under Grant 2026J0011040.
+
+% ─────────────────────────────────────────────────────────────────────────────
+\bibliography{references}
+
+\end{document}

@@ -1,0 +1,21 @@
+name: exp_mext_e11_1dcnn_pu_cross
+data_dir: ~/data_pu
+win_len: 4096
+stride: 4096
+cross_condition: true
+batch_size: 64
+num_workers: 4
+backbone: cnn1d
+d_model: 64
+n_layers: 4
+conv_stride: 2
+fs_hz: 64000.0
+epochs: 50
+lr: 3.0e-4
+weight_decay: 1.0e-4
+grad_clip: 1.0
+scheduler: cosine
+noise_snr_db: null
+lambda_kin: 0.0
+seeds: [0, 1, 2, 3, 4]
+results_dir: ~/论文8/results/exp_mext_e11_1dcnn_pu_cross

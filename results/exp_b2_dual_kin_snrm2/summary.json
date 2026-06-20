@@ -1,0 +1,23 @@
+{
+  "config": "tmpwdzjb1ml.yaml",
+  "backbone": "mamba3",
+  "lambda_kin": 0.01,
+  "noise_snr_db": -2.0,
+  "label_mode": "4class",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "best_val_accs": [
+    0.9957519116397621,
+    0.9957519116397621,
+    0.9957519116397621,
+    0.9889549702633815,
+    0.9915038232795242
+  ],
+  "mean_best_val_acc": 0.9935429056924384,
+  "std_best_val_acc": 0.003156189570264478
+}

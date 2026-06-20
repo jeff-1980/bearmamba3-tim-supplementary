@@ -1,0 +1,20 @@
+{
+  "config": "config_kin.yaml",
+  "lambda_kin": 0.01,
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "best_val_accs": [
+    1.0,
+    1.0,
+    0.9991503823279524,
+    1.0,
+    1.0
+  ],
+  "mean_best_val_acc": 0.9998300764655905,
+  "std_best_val_acc": 0.0003799605739167153
+}

@@ -1,0 +1,23 @@
+{
+  "config": "config_dual_kin.yaml",
+  "backbone": "mamba3",
+  "lambda_kin": 0.01,
+  "noise_snr_db": 0.0,
+  "label_mode": "4class",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "best_val_accs": [
+    1.0,
+    0.9991503823279524,
+    1.0,
+    0.9991503823279524,
+    0.9983007646559049
+  ],
+  "mean_best_val_acc": 0.9993203058623621,
+  "std_best_val_acc": 0.0007108411440391322
+}

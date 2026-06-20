@@ -1,0 +1,184 @@
+% ============================================================
+% Section 2: Related Work
+% BearMamba-3: Mamba-3 + L_kin + Multi-Sensor Fusion
+% Target: MSSP (IF 8.4)  Draft: 2026-06-15
+% ============================================================
+
+\section{Related Work}
+\label{sec:related}
+
+\subsection{Classical Signal Processing Baselines}
+\label{subsec:rel_classical}
+
+Classical bearing diagnosis pipelines combine signal processing with shallow
+classifiers: envelope analysis demodulates the carrier to expose
+fault-frequency sidebands, spectral kurtosis (SK) identifies the optimal
+demodulation band, and hand-crafted statistical features (RMS, kurtosis,
+crest factor) feed linear SVMs or k-nearest-neighbour
+classifiers~\cite{antoni2006spectral_kurtosis,randall2011rolling}.
+These methods are interpretable and require no GPU, but their feature sets
+are fixed at design time and do not generalise to variable shaft speed without
+explicit per-sample recomputation of fault frequencies.
+We include a representative SK-SVM baseline in our CWRU evaluation
+(Table~\ref{tab:cwru_baselines}) to provide an absolute accuracy anchor
+and to highlight where deep models, and BearMamba-3 in particular, add value
+beyond hand-crafted features.
+
+\subsection{Deep Learning for Bearing Fault Diagnosis}
+\label{subsec:rel_dl}
+
+Convolutional neural networks (CNNs) established a dominant paradigm for
+bearing fault diagnosis: 1-D convolutions extract periodic impulse features
+directly from raw vibration waveforms, while 2-D convolutions operate on
+time-frequency representations such as spectrograms and scalograms
+\cite{wen2018new,zhang2020deep,zhang2019resnet,hoang2019survey}.
+Variants with dilated kernels, multi-scale receptive fields, and residual
+connections have progressively improved accuracy under clean-signal
+conditions and cross-domain scenarios~\cite{guo2020deep,zhuyun2020cscoh,li2020systematic,jiao2020cnn_review}.
+
+Attention mechanisms and Transformer encoders were subsequently applied
+to bearing diagnosis, with self-attention providing a principled mechanism
+for relating fault-periodic harmonics across long
+windows~\cite{shao2021transformer_bearing,chen2021vibration_transformer}.
+However, the quadratic attention cost limits practical window length,
+and the position encodings of vanilla Transformers lack explicit
+knowledge of bearing kinematics.
+Hybrid CNN-attention architectures and attention-based transfer learning
+methods have partially addressed these
+limitations~\cite{li2022hybrid_fault,liu2024dat}.
+Comprehensive surveys of deep learning and transfer learning for bearing
+diagnosis are provided in~\cite{yang2023deep_tl,tama2022review}.
+
+A parallel line of work incorporates \emph{physical prior knowledge}
+at the signal-processing level, using envelope analysis,
+EEMD, and STFT to pre-extract fault-frequency features before feeding
+them to classifiers~\cite{randall2011rolling,smith2015rolling}.
+Our approach instead embeds kinematic knowledge as a soft regulariser
+within end-to-end training, preserving the flexibility of raw-waveform
+learning while providing physically motivated frequency alignment.
+
+\subsection{State-Space Models and Mamba for Fault Diagnosis}
+\label{subsec:rel_ssm}
+
+Structured state-space models (SSMs)~\cite{gu2021efficiently} — including
+S4, S5, H3, and Mamba — have emerged as competitive alternatives to Transformers
+for long-sequence modelling, combining linear-time complexity with rich
+temporal representations.
+Mamba~\cite{gu2023mamba} introduced input-dependent selective state updates,
+and Mamba-2~\cite{mamba2} further simplified the formulation by relating
+SSM layers to multi-head linear attention.
+Mamba-3~\cite{mamba3_2026} generalises Mamba-2 by replacing scalar real states
+with complex-valued oscillatory states governed by per-step angle activations,
+enabling explicit frequency-domain modelling in the state update.
+
+The efficiency of Mamba on long sequences~\cite{gu2023mamba,mamba2} has
+been validated across diverse time-series tasks~\cite{mamba_fault_2024},
+and the foundational HiPPO memory projection underpinning SSMs has been
+shown to capture long-range dependencies robustly~\cite{mamba_fault2_2025}.
+Prior bearing SSM work introduced BearMamba-2 (Mamba-2 backbone,
+feature-level noise-awareness, submitted) and KG-cSSM (complex-state priors
+at the architecture level for variable-speed diagnosis, under review).
+Concurrently, Li~\textit{et~al.}~\cite{li2026pgtmt} propose PG-TMT,
+which embeds physics guidance via frequency-domain attention alignment with
+bearing fault-order bands, achieving sub-1\,MB edge deployment and EVT-based
+reliability calibration; their work positions on operational reliability
+and deployment efficiency rather than within-condition accuracy
+maximisation, and avoids direct comparison against classical 1D-CNN
+baselines.
+In contrast, the present work introduces physics directly at the SSM
+state level: the kinematic regulariser $\mathcal{L}_{\text{kin}}$ acts on
+Mamba-3's complex eigenvalues, which encode oscillation frequency through
+their phase angle.
+These represent two complementary physics-guidance
+strategies---\emph{soft post-hoc alignment} versus \emph{hard
+architectural embedding}---targeting different deployment regimes
+(edge-IoT versus industrial PC with cross-condition robustness).
+The present work is the first to: (i) employ the official Mamba-3 backbone
+in a bearing diagnostic context; (ii) exploit the instantaneous angle
+activations of Mamba-3 states as the hook for a per-sample kinematic
+loss function.
+
+\subsection{Physical Inductive Biases in Neural Diagnostics}
+\label{subsec:rel_physics}
+
+Physics-informed neural networks (PINNs)~\cite{raissi2019physics,willard2022physics}
+impose governing equations as soft constraints in the training loss, typically
+acting on the network's outputs.
+In fault diagnosis, physical constraints have been applied at various levels:
+physics-inspired correlation fusion integrating domain knowledge into feature
+alignment~\cite{chen2022physics_diag},
+noise-robust layerwise feature learning with structured constraints on the
+loss landscape~\cite{spectrum_reg_2023},
+and domain-adversarial ensemble learning that penalises domain-inconsistent
+intermediate representations~\cite{complexval_fault}.
+
+Most closely related to our work, Jiang et al.~\cite{jiang2025mechanism}
+proposed a mechanism-driven domain adaptation model in which bearing
+fault physics are embedded as inductive biases to guide feature alignment
+across operating conditions, simultaneously improving cross-domain accuracy
+and interpretability.
+Our $\mathcal{L}_{\text{kin}}$ shares the spirit of making physical
+mechanism knowledge a first-class constraint, but differs in two key
+respects: (i) it operates at the \emph{activation level} of a Mamba-3
+state-space model — aligning intermediate \emph{instantaneous oscillatory
+state frequencies} with analytically known fault harmonics — rather than
+at the output or domain-alignment level; (ii) it is architecturally
+bound to the Mamba-3 backbone (Section~\ref{subsec:lkin}), making
+the backbone selection and physical prior design a single integrated
+decision rather than two independent components.
+This activation-level operation distinguishes $\mathcal{L}_{\text{kin}}$
+from output-level PINNs~\cite{raissi2019physics,willard2022physics}
+(which guide predictions, not intermediate features) and from weight-level
+or loss-level regularisers (which constrain parameters or domain alignment,
+not per-state frequency activations).
+Unlike prior work that attracted learned features toward a single fault
+class~\cite{lu2017hierarchical}, our cover variant generalises to all
+fault frequency families and to variable-speed per-sample targets.
+
+\subsection{Multi-sensor Fusion in Rotating Machinery Diagnosis}
+\label{subsec:rel_multisensor}
+
+Early sensor fusion for fault diagnosis concatenated multiscale convolutional
+features from multiple sensor locations before a
+classifier~\cite{fusion_early,multisensor_encoder}.
+More recent approaches fuse at the waveform level through sparse autoencoder
+and deep belief network architectures~\cite{chen2017multisensor,wang2020vibro},
+attention-based channel alignment~\cite{wan2023multisensor,multisensor_attn},
+or multi-sensor residual convolutional fusion under noisy
+conditions~\cite{ye2024mrcfn}.
+Multi-sensor 2-D CNN fusion has demonstrated accuracy improvements when
+sufficient multi-position data are available~\cite{wang2021multisensor2d}.
+
+Orthogonal-axis accelerometers (horizontal and vertical) have been shown
+to provide complementary fault signatures for different fault
+types~\cite{xjtu_paper}: inner-race faults excite strong vibrations in both
+directions, while outer-race faults may be more pronounced in a single
+directional axis depending on load zone alignment.
+This physical asymmetry directly motivates our finding
+(Section~\ref{subsubsec:xjtu}) that dual-sensor fusion benefits IR recall
+much more than OR recall in leave-one-bearing-out evaluation.
+
+The precision--sample-efficiency trade-off we characterise
+— additional sensor channels improve performance when training data is
+sufficient but induce negative transfer in severe few-shot regimes
+— has been observed in multi-sensor graph-network studies~\cite{fusion_graph}
+and adaptive viewable-graph fusion under adverse conditions~\cite{multisensor_tradeoff},
+but has not been systematically documented for SSM-based bearing diagnostics.
+
+\subsection*{Summary and Research Gaps}
+\label{subsec:gaps}
+
+In summary, the existing literature reveals two open problems addressed
+by this work.
+First, while SSMs with complex-valued states carry instantaneous oscillatory
+frequencies that have natural physical semantics in bearing diagnostics,
+no prior work has exploited these \emph{activation-level} frequencies as
+a hook for per-sample kinematic regularisation — existing physics-informed
+approaches operate at the output, domain-alignment, or weight level.
+Second, the interaction between SSM state bandwidth and multi-sensor input
+count — and its dependence on available training data — has not been
+characterised.
+BearMamba-3 addresses both gaps through an integrated design in which the
+Mamba-3 backbone selection and the kinematic loss are structurally bound,
+and through systematic single- versus dual-sensor ablations across three
+public datasets.

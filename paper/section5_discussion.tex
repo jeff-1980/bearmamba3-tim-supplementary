@@ -1,0 +1,236 @@
+% ============================================================
+% Section 5: Discussion
+% BearMamba-3: Mamba-3 + L_kin + Multi-Sensor Fusion
+% Target: MSSP (IF 8.4)  Draft: 2026-06-15
+% ============================================================
+
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{Why BearMamba-3 in lieu of BearMamba-2.}
+BearMamba-2 outperforms BearMamba-3 on CWRU under heavy AWGN
+($\leq -4$~dB, $p = 0.031$, Table~\ref{tab:snr_ablation}).
+This is attributed to BearMamba-3's more complex optimisation landscape
+arising from complex-state parameters (D18): in simple i.i.d.\ Gaussian
+noise at constant speed, BearMamba-3 converges more slowly and with higher
+inter-seed variance.
+On PU cross-condition data, both architectures reach equivalent accuracy
+($p > 0.05$, Table~\ref{tab:c1_pu}), and BearMamba-3's variance is
+$3\times$ higher than BearMamba-2 (0.72\% vs 0.24\%), consistent with
+the same convergence instability.
+We note this as a known cost of BearMamba-3 and motivate its adoption
+exclusively on the structural binding to $\mathcal{L}_{\text{kin}}$:
+BearMamba-2 lacks instantaneous rotation frequencies and therefore cannot
+carry the physical frequency alignment constraint (Section~\ref{subsec:lkin}).
+
+\paragraph{Pre-classifier feature space under heavy noise.}
+Figure~\ref{fig:tsne_snr6} shows t-SNE of pre-classifier features at SNR~$=-6$~dB
+for BM3 $\pm\mathcal{L}_{\text{kin}}$ (seed~2, representative of the 5-seed ensemble).
+At this SNR, both conditions produce heavily overlapping clusters
+(Inner, Ball, and Outer interleaved), and the DB index is slightly higher
+(worse) with $\mathcal{L}_{\text{kin}}$ (0.909 vs 0.883).
+This is consistent with the non-significant accuracy difference at SNR~$=-6$~dB
+($\Delta_{\text{mean}} = -0.09$~pp, $p \geq 0.25$): $\mathcal{L}_{\text{kin}}$
+organises the state frequency space (Figure~\ref{fig:tsne_fbar}) but cannot
+recover the classifier-level separability that is lost to signal corruption.
+The variance-stabilisation effect (std $\downarrow 14\%$ at SNR~$=-6$~dB,
+Table~\ref{tab:snr_ablation}) reflects a more consistent optimisation trajectory,
+not improved feature geometry.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.92\linewidth]{tsne_cwru_snr-6_seed2}
+\caption{t-SNE of pre-classifier features, CWRU SNR~$=-6$~dB, seed~2.
+  \textbf{(a)} Without $\mathcal{L}_{\text{kin}}$: DB~$= 0.883$;
+  \textbf{(b)} With $\mathcal{L}_{\text{kin}}$: DB~$= 0.909$.
+  At heavy noise, fault-class clusters overlap substantially for both conditions;
+  $\mathcal{L}_{\text{kin}}$ does not recover separability.
+  The slightly higher DB for $+\mathcal{L}_{\text{kin}}$ is within the
+  inter-seed variation range and does not indicate structural degradation.}
+\label{fig:tsne_snr6}
+\end{figure}
+
+\paragraph{Cross-seed t-SNE robustness.}
+To validate that the single-seed visualisation in Figure~\ref{fig:tsne_snr6}
+is representative of the 5-seed ensemble rather than an isolated artefact,
+we re-extracted pre-classifier features for all five seeds at both
+SNR~$=0$~dB and SNR~$=-6$~dB, computed t-SNE projections under matched
+hyperparameters, and report the Davies--Bouldin (DB) index per seed
+in Figure~\ref{fig:tsne_multiseed}.
+At SNR~$=0$~dB, DB~$= 0.396 \pm 0.031$ across seeds (range
+0.346--0.423), confirming highly consistent feature-space organisation
+with $\mathcal{L}_{\text{kin}}$ when the signal-to-noise ratio is moderate.
+At SNR~$=-6$~dB, DB~$= 0.920 \pm 0.103$ (range 0.833--1.097); the
+elevated dispersion is concentrated in a single outlier (seed~1,
+DB~$= 1.097$, val.\ accuracy $89.21\%$), reflecting a poor random
+initialisation that converged to a degraded local minimum under heavy
+noise---a known phenomenon for complex-state SSMs (D18 in our
+project log).
+Excluding this outlier yields DB~$= 0.875 \pm 0.030$, comparable to the
+SNR~$=0$~dB stability, while including it provides an honest assessment
+of seed sensitivity at extreme noise.
+Notably, seed~2 (used in Figure~\ref{fig:tsne_snr6}) reports
+DB~$= 0.906$, within $1.4\%$ of the 5-seed mean, confirming its
+representativeness.
+This cross-seed quantitative evidence complements the per-seed
+qualitative t-SNE in Figure~\ref{fig:tsne_snr6} and pre-empts a
+potential reviewer concern that single-seed visualisations may
+cherry-pick favourable initialisations.
+
+\begin{figure*}[htbp]
+\centering
+\includegraphics[width=0.95\linewidth]{tsne_multiseed_composite}
+\caption{Cross-seed t-SNE robustness validation.
+  Pre-classifier feature projections for all five training seeds
+  at SNR~$=0$~dB (top row) and SNR~$=-6$~dB (bottom row), with
+  Davies--Bouldin (DB) index annotated per seed.
+  At SNR~$=0$~dB, DB~$= 0.396 \pm 0.031$ (5 seeds), demonstrating
+  high feature-space consistency.
+  At SNR~$=-6$~dB, DB~$= 0.920 \pm 0.103$; dispersion is dominated
+  by seed~1 (DB~$= 1.097$, val.\ accuracy $89.21\%$), a single poor
+  initialisation. Excluding seed~1 yields DB~$= 0.875 \pm 0.030$,
+  matching the SNR~$=0$~dB stability. Seed~2 (used in
+  Figure~\ref{fig:tsne_snr6}) reports DB~$= 0.906$, validating its
+  representativeness of the 5-seed mean ($1.4\%$ relative deviation).
+  All seeds use identical t-SNE hyperparameters
+  (perplexity $= 30$, random\_state $= 42$).}
+\label{fig:tsne_multiseed}
+\end{figure*}
+
+\paragraph{$\mathcal{L}_{\text{kin}}$ boundary conditions.}
+$\mathcal{L}_{\text{kin}}$ shows variance-stabilising effects on CWRU
+(AWGN, variable SNR) but is ineffective on the Paderborn dataset (discrete
+speed switching) and XJTU-SY (run-to-failure, amplitude-driven regime).
+The Paderborn case degrades the per-sample RPM advantage to a two-point
+prior: with only two nominal speeds (900 and 1500~rpm), $\mathcal{F}_i$
+reduces to two fixed frequency sets and the continuous-speed adaptation
+advantage is not activated~\cite{an2019rnn_bearing,liao2020variable_domain}.
+The XJTU case saturates the coverage-distance metric from epoch~1 onward
+(BPFO distance $< 5$~Hz before $\mathcal{L}_{\text{kin}}$ even converges),
+because large-amplitude end-of-life impulsive features naturally span the
+fault frequency band; the remaining gradient signal from $\mathcal{L}_{\text{kin}}$
+is too small to influence accuracy-relevant features.
+Mechanism-driven approaches such as Jiang et al.~\cite{jiang2025mechanism}
+similarly note that the effectiveness of physical priors is bounded by
+the signal characteristics — a consistent observation across
+physics-informed diagnostic methods.
+Future work could investigate task-adaptive gating of $\mathcal{L}_{\text{kin}}$
+based on detected signal impulsiveness (e.g.\ kurtosis threshold), to
+gracefully deactivate the constraint in amplitude-dominated regimes.
+
+\paragraph{LOBO OR degradation in dual-sensor XJTU.}
+The $-15.5$~pp LOBO OR macro-recall drop (Table~\ref{tab:xjtu}) warrants
+careful interpretation.
+Condition~3 has only two OR bearings (Bearing3\_1 and Bearing3\_5); each
+LOBO fold therefore trains on a single OR instance.
+The vertical acceleration component of a single OR bearing captures
+idiosyncratic mounting and preload characteristics that do not generalise
+across bearings~\cite{xjtu_paper}.
+In contrast, horizontal components are more structurally correlated with
+OR fault patterns, explaining the significantly smaller degradation in IR
+folds where two training IR bearings are available.
+This degradation is a dataset-structure constraint, not an inherent
+limitation of dual-sensor architectures; a balanced dataset with
+$\geq 4$ OR bearings per condition would be expected to eliminate this
+effect.
+Practitioners deploying multi-sensor fusion in LOBO-style evaluations
+should ensure adequate per-fault-type bearing coverage in the training set.
+
+\paragraph{Two complementary inductive bias paradigms.}
+The cross-dataset analysis in Section~\ref{subsec:paradigm} exposes a
+structural complementarity in how two families of methods achieve
+low-SNR robustness.
+
+The \textbf{BN-dependent paradigm} (1D-CNN, most CNN architectures) relies on
+BatchNorm layers that normalise activations using source-domain batch statistics.
+This provides powerful implicit regularisation within a fixed distribution:
+1D-CNN reaches $95.96\%$ at CWRU $-8$~dB, outperforming BM3 by $10.2$~pp.
+Phase~2b ablation (Table~\ref{tab:bn_ablation}) isolates BatchNorm as the
+principal mechanism: removing all eight BatchNorm layers reduces 1D-CNN
+accuracy by $12.69$~pp ($83.26\%$), at which point the performance gap
+with BM3 ($85.45\%$) is no longer statistically significant ($p = 0.125$).
+However, the same statistical dependence that makes BN effective within
+distribution makes it brittle under domain shift: on XJTU-SY cross-condition
+evaluation, 1D-CNN collapses to a constant-OR predictor
+(IR recall $\approx 1\%$, Table~\ref{tab:ood_comparison}).
+
+The \textbf{frequency-grounded paradigm} (BearMamba-3 + $\mathcal{L}_{\text{kin}}$)
+replaces statistical normalisation with an explicit, distribution-agnostic
+constraint: each training step penalises the distance between learned state
+frequencies and analytically known fault harmonics (Section~\ref{subsec:lkin}).
+This approach yields no within-distribution advantage at the scale tested
+on CWRU (a near-ceiling benchmark), but maintains macro-F1 of $79.73\%$
+on XJTU-SY cross-condition --- $38.4$~pp above 1D-CNN (BN) --- because
+the physical prior remains valid regardless of source-domain statistics.
+
+The practical implication is a deployment-context decision rather than an
+absolute ranking:
+\emph{within-condition} monitoring (same machine, constant speed) favours
+BN-dependent methods for their stronger implicit regularisation;
+\emph{cross-machine or variable-speed} monitoring favours frequency-grounded
+methods whose constraint validity is independent of the source domain.
+Future architectures might combine both: a hybrid regulariser that activates
+BatchNorm within domain and $\mathcal{L}_{\text{kin}}$ at domain boundaries.
+This regime-dependent positioning is corroborated by concurrent
+physics-guided Mamba work: PG-TMT~\cite{li2026pgtmt} similarly
+sidesteps direct comparison against classical 1D-CNN baselines and
+positions instead on edge deployment and reliability calibration,
+paralleling our framing of physical inductive bias as a
+complementary---rather than competitive---axis to within-distribution
+accuracy.
+% ⚠️ D33 Win2 叙事框架最终版：BN解释机制 + OOD反转；不写"Win2 achieved"
+
+\paragraph{Comparison scope and absolute accuracy context.}
+This study focuses on ablating the SSM backbone (BM2 vs BM3) and the
+physical regulariser ($\pm\mathcal{L}_{\text{kin}}$), holding all other
+design choices constant to isolate the effect of each.
+To situate BearMamba-3 in a broader context,
+Table~\ref{tab:cwru_baselines} includes comparisons against
+SK-SVM~\cite{antoni2006spectral_kurtosis}, 1D-CNN, and Transformer-1D.
+At clean and moderate SNR, all deep methods approach ceiling accuracy on
+CWRU; at lower SNR, methods with stronger implicit regularisation (1D-CNN
+with BatchNorm, BearMamba-2) achieve higher accuracy than BearMamba-3,
+consistent with BM3's known complex-state optimisation landscape sensitivity
+(Section~\ref{subsec:c1}).
+The contribution of BearMamba-3 is not accuracy maximisation on
+CWRU within-condition, but the structural and interpretability properties
+enabled by Mamba-3's oscillatory states (C1: unique carrier of
+$\mathcal{L}_{\text{kin}}$), the variance-stabilising physical inductive bias
+(C2), and the OOD robustness demonstrated on XJTU-SY cross-condition
+(Section~\ref{subsec:paradigm}).
+
+\paragraph{Noise model scope.}
+All noise experiments use Additive White Gaussian Noise (AWGN), which
+provides a controlled, reproducible benchmark aligned with prior work on
+this dataset~\cite{zhang2020deep}.
+Industrial environments often include non-Gaussian noise such as coloured
+or impulsive interference; the robustness of $\mathcal{L}_{\text{kin}}$
+under such conditions is an open question left to future work.
+
+\paragraph{Reproducibility and statistical power.}
+All experiments use 5 independent random seeds; the minimum detectable
+one-sided Wilcoxon $p$-value is 0.031 (all-concordant).
+At this sample size, a true mean difference of $\sim$2~pp with
+$\sigma \approx 1\%$ yields statistical power of only $\approx 50\%$;
+the absence of significance for C2 variance reduction and several
+C3 SNR points should therefore be interpreted as a power limitation
+rather than evidence of no effect.
+
+\paragraph{Window-level split and temporal overlap.}
+CWRU experiments use a sliding window with stride $= T/2$ (50\% overlap).
+Randomly assigning overlapping windows to train/val may introduce weak
+temporal correlation, which could marginally inflate accuracy estimates.
+This is consistent with standard CWRU benchmarking practice and is
+unlikely to affect the relative comparisons between methods.
+
+\paragraph{Deployment cost versus accuracy trade-off.}
+While our BearMamba-3 requires a workstation-class GPU ($\geq 4$\,GB)
+for deployment, PG-TMT~\cite{li2026pgtmt} achieves edge-IoT deployment
+at sub-1\,MB with sub-7\,ms Jetson p99 latency.
+We position this work for industrial PC deployments where cross-condition
+accuracy and physical interpretability take precedence over
+footprint---a complementary regime to edge-IoT diagnostic instrumentation,
+not a competing one.
+Future work could investigate quantisation-aware distillation of
+BearMamba-3's complex SSM states for edge inference, potentially combined
+with EVT-style reliability calibration to bridge the two regimes.
